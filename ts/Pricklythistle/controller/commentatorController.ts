@@ -6,18 +6,49 @@
 
 module Pricklythistle.Controller {
     import GoogleAuthenticationService = Google.Services.GoogleAuthenticationService;
+    import YouTubeService = Google.Services.YouTubeService;
 
     export class CommentatorController {
 
-        constructor( private googleAuthenticationService: GoogleAuthenticationService) {
+        //  Statics
+
+        static scopes: string = "https://www.googleapis.com/auth/youtube https://googleapis.com/auth/userinfo.profile";
+
+        //  Constructor
+
+        constructor(
+            private googleAuthenticationService: GoogleAuthenticationService,
+            private youTubeService: YouTubeService
+        ) {
 
         }
+
+        //  Properties
+
+        get message(): string {
+            return this.googleAuthenticationService.token ? this.googleAuthenticationService.token.access_token : "not logged in";
+        }
+
+        get loggedIn(): boolean {
+            return this.googleAuthenticationService.token != null;
+        }
+
+        //  Public Functions
 
         authenticate(): void {
-            this.googleAuthenticationService.authenticate();
+            console.log( `requesting authentication` );
+            this.googleAuthenticationService.authenticate( CommentatorController.scopes).subscribe(
+                _ => {
+                    console.log( "Getting user info" );
+                    this.youTubeService.getUserInfo();
+                }
+            );
         }
 
-        message: string = "Hello Controller";
+        logOut(): void {
+            console.log( `logging out` );
+            this.googleAuthenticationService.logOut();
+        }
 
     }
 

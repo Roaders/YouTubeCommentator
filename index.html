@@ -21,11 +21,12 @@
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
-    <!-- Angular -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
-
     <!-- Rx -->
     <script src="node_modules/rx/dist/rx.all.js"></script>
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+    <script src="node_modules/rx-angular/dist/rx.angular.js"></script>
 
     <link href="css/styles.css" rel="stylesheet">
     <script src="app.js" ></script>
@@ -36,18 +37,19 @@
 </head>
 <body>
 
-<H1>Hello World</H1>
-
+<!--- TODO: Show this content in a root when boot is complete --->
 <div ng-controller="commentatorController as controller">
 
-    <div>
+    <div ng-if="controller.loggedIn">
         {{controller.message}}
     </div>
 
-    <button
+    <button ng-if="!controller.loggedIn"
             class="google"
             ng-click="controller.authenticate()"
     ></button>
+
+    <a ng-click="controller.logOut()" ng-if="controller.loggedIn">Log Out</a>
 
 </div>
 

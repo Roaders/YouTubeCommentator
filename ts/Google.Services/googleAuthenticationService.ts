@@ -20,44 +20,53 @@ module Google.Services {
 
         //  Constructor
 
-        constructor( private $http: ng.IHttpService ) {
-            this.authenticate( true );
+        constructor(
+            private $http: ng.IHttpService,
+            private $rootScope: ng.IScope
+        ) {
         }
 
-        //  Private Variables
+        //   Properties
 
-        private access_token: GoogleApiOAuth2TokenObject;
+        token: GoogleApiOAuth2TokenObject;
 
         //  Public Functions
 
-        authenticate( immediate: boolean = false ): void {
-            this.loadClientDetails()
+        logOut(): void {
+            console.log( "destroying token" );
+            this.token = null;
+            gapi.auth.signOut();
+        }
+
+        authenticate( scope: string, immediate: boolean = false ): Rx.Observable<GoogleApiOAuth2TokenObject> {
+            return this.loadClientDetails()
                 .do( clientDetails => {
-                    console.log( `storing client details: ${clientDetails.client_id}` );
+                    //console.log( `storing client details: ${clientDetails.client_id}` );
                     gapi.client.setApiKey( clientDetails.client_id )
                 })
-                .flatMap<GoogleApiOAuth2TokenObject>( clientDetails => this.askForAuthentication( clientDetails, immediate) )
-                .subscribe(
+                .flatMap<GoogleApiOAuth2TokenObject>( clientDetails => this.askForAuthentication( clientDetails, scope, immediate) )
+                .safeApply(
+                    this.$rootScope,
                     token => {
                         console.log( `token received: ${token.access_token}` );
-                        this.access_token = token;
+                        this.token = token;
                     },
                     error => {
                         console.log( `Error authorizing access: ${error}` )
-                    }
-            );
+                    } );
         }
 
         //  Private Functions
 
-        private askForAuthentication( clientDetails: IClientDetails, immediate: boolean = false ): Rx.Observable<GoogleApiOAuth2TokenObject> {
-            console.log( `Asking for authentication: ${clientDetails.client_id}` );
+        private askForAuthentication( clientDetails: IClientDetails, scope: string, immediate: boolean = false ): Rx.Observable<GoogleApiOAuth2TokenObject> {
+            //console.log( `Asking for authentication: ${clientDetails.client_id}` );
 
             return Rx.Observable.fromCallback( gapi.auth.authorize )(
                 { client_id: clientDetails.client_id, scope: "https://www.googleapis.com/auth/youtube", immediate: immediate }
             );
         }
 
+        //TODO: Ensure that we only load this once
         private loadClientDetails(): Rx.Observable<IClientDetails> {
 
             return Rx.Observable.defer<ng.IHttpPromiseCallbackArg<IAppDetails>>( () => {

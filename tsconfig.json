@@ -9,6 +9,7 @@
   "files": [
     "ts/app.ts",
     "node_modules/rx/ts/rx.all.d.ts",
+    "node_modules/rx-angular/ts/rx.angular.d.ts",
     "typings/browser.d.ts"
   ],
   "exclude": [
