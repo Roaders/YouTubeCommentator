@@ -1,0 +1,29 @@
+{
+  "name": "YouTubeCommentator",
+  "version": "1.0.0",
+  "description": "A webpage to easily manage comments and replies on a youTubeChannel",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Roaders/YouTubeCommentator.git"
+  },
+  "keywords": [
+    "typescript",
+    "youTube",
+    "rxjs"
+  ],
+  "author": "Giles Roadnight",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Roaders/YouTubeCommentator/issues"
+  },
+  "homepage": "https://github.com/Roaders/YouTubeCommentator",
+  "dependencies": {
+    "rx": "v4.0.6",
+    "typescript": "^1.7.5",
+    "typing": "^0.1.9"
+  }
+}

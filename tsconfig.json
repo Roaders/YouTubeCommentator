@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true,
+    "outFile": "app.js"
+  },
+  "files": [
+    "ts/app.ts",
+    "typings/browser.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
