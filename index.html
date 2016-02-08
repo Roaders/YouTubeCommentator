@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="youTubeCommentator">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>youTube Commentator</title>
@@ -27,14 +27,29 @@
     <!-- Rx -->
     <script src="node_modules/rx/dist/rx.all.js"></script>
 
+    <link href="css/styles.css" rel="stylesheet">
     <script src="app.js" ></script>
+
+    <!-- Google Auth Client -->
+    <script src="https://apis.google.com/js/client.js?onload=initiateApp"></script>
 
 </head>
 <body>
 
 <H1>Hello World</H1>
 
-<div ng-controller="commentatorController as controller">{{controller.message}}</div>
+<div ng-controller="commentatorController as controller">
+
+    <div>
+        {{controller.message}}
+    </div>
+
+    <button
+            class="google"
+            ng-click="controller.authenticate()"
+    ></button>
+
+</div>
 
 </body>
 </html>

@@ -21,16 +21,42 @@ module Google.Services {
         //  Constructor
 
         constructor( private $http: ng.IHttpService ) {
-            this.loadClientDetails().subscribe( result => {
-                console.log(`result: ${result.client_id}`)
-            } );
+            this.authenticate( true );
         }
 
         //  Private Variables
 
+        private access_token: GoogleApiOAuth2TokenObject;
+
         //  Public Functions
 
+        authenticate( immediate: boolean = false ): void {
+            this.loadClientDetails()
+                .do( clientDetails => {
+                    console.log( `storing client details: ${clientDetails.client_id}` );
+                    gapi.client.setApiKey( clientDetails.client_id )
+                })
+                .flatMap<GoogleApiOAuth2TokenObject>( clientDetails => this.askForAuthentication( clientDetails, immediate) )
+                .subscribe(
+                    token => {
+                        console.log( `token received: ${token.access_token}` );
+                        this.access_token = token;
+                    },
+                    error => {
+                        console.log( `Error authorizing access: ${error}` )
+                    }
+            );
+        }
+
         //  Private Functions
+
+        private askForAuthentication( clientDetails: IClientDetails, immediate: boolean = false ): Rx.Observable<GoogleApiOAuth2TokenObject> {
+            console.log( `Asking for authentication: ${clientDetails.client_id}` );
+
+            return Rx.Observable.fromCallback( gapi.auth.authorize )(
+                { client_id: clientDetails.client_id, scope: "https://www.googleapis.com/auth/youtube", immediate: immediate }
+            );
+        }
 
         private loadClientDetails(): Rx.Observable<IClientDetails> {
 

@@ -13,6 +13,10 @@ module Pricklythistle.Controller {
 
         }
 
+        authenticate(): void {
+            this.googleAuthenticationService.authenticate();
+        }
+
         message: string = "Hello Controller";
 
     }

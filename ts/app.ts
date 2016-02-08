@@ -12,3 +12,8 @@ const app: ng.IModule = angular.module( "youTubeCommentator", [] );
 
 app.controller( "commentatorController", CommentatorController );
 app.service( "googleAuthenticationService", GoogleAuthenticationService );
+
+function initiateApp() {
+    console.log( "initiate app");
+    angular.bootstrap( document, ["youTubeCommentator"] );
+}
