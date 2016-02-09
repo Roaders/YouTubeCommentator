@@ -1,0 +1,23 @@
+
+
+<div class="header" ng-controller="headerController as controller">
+
+    <div class="header-user-image">
+        <img
+            src="{{controller.userInfo.picture}}"
+            width="50"
+            height="50"
+        />
+    </div>
+
+    <div class="header-content">
+        <span class="username">{{controller.userInfo.name}}</span>
+    </div>
+
+    <div class="header-logout">
+
+        <a ng-click="controller.logOut()" href="">LogOut</a>
+    </div>
+
+
+</div>

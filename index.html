@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>youTube Commentator</title>
 
+    <link href="css/styles.css" rel="stylesheet">
+
     <!-- Bootstrap -->
     <link
         rel="stylesheet"
@@ -22,46 +24,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
     <!-- Rx -->
-    <script src="node_modules/rx/dist/rx.all.js"></script>
+    <script src="node_modules/rx/dist/rx.all.min.js"></script>
 
     <!-- Angular -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
     <script src="node_modules/rx-angular/dist/rx.angular.js"></script>
-
-    <link href="css/styles.css" rel="stylesheet">
+    <script src="node_modules/angular-route/angular-route.js"></script>
+    <script src="node_modules/angular-cookies/angular-cookies.js"></script>
     <script src="app.js" ></script>
 
     <!-- Google Auth Client -->
     <script src="https://apis.google.com/js/client.js?onload=initiateApp"></script>
 
 </head>
-<body>
+<body >
+<div ng-view class="site-container">
 
-<!--- TODO: Show this content in a root when boot is complete --->
-<div ng-controller="commentatorController as controller">
-
-    <div ng-if="controller.loggedIn">
-        <div>{{controller.message}}</div>
-        <div>{{controller.userInfo.name}}</div>
-        <div>{{controller.userInfo.email}}</div>
-        <div>{{controller.userInfo.family_name}}</div>
-        <div>{{controller.userInfo.gender}}</div>
-        <div>{{controller.userInfo.given_name}}</div>
-        <div>{{controller.userInfo.id}}</div>
-        <div><a href="{{controller.userInfo.link}}">{{controller.userInfo.link}}</a></div>
-        <div>{{controller.userInfo.picture}}</div>
-        <div>{{controller.userInfo.verified_email}}</div>
-
-        <img src="{{controller.userInfo.picture}}" />
-
-    </div>
-
-    <button ng-if="!controller.loggedIn"
-            class="google"
-            ng-click="controller.authenticate()"
-    ></button>
-
-    <a ng-click="controller.logOut()" ng-if="controller.loggedIn">Log Out</a>
+    <span class="large-loading">Loading....</span>
 
 </div>
 

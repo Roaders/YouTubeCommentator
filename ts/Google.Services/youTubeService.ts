@@ -32,7 +32,7 @@ module Google.Services {
 
         getUserInfo(): Rx.Observable<IUserInfo> {
 
-            console.log( "loading user info" );
+            console.log( "YouTubeService loading user info" );
 
             return this.googleAuthenticationService.request<IUserInfo>( { path: YouTubeService.userInfo } );
 

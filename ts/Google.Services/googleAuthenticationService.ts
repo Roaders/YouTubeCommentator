@@ -24,36 +24,62 @@ module Google.Services {
 
     export class GoogleAuthenticationService {
 
+        //  Statics
+
+        static cookie_Key: string = "userToken";
+
         //  Constructor
 
-        constructor(private $http:ng.IHttpService,
-                    private $rootScope:ng.IScope) {
+        constructor(
+            private $http:ng.IHttpService,
+            private $rootScope:ng.IScope,
+            private $location: ng.ILocationService,
+            private $cookies : angular.cookies.ICookiesService
+        ) {
+            if( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) ) {
+                console.log( "setting api token from cookie" );
+                this.token = JSON.parse( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) );
+                gapi.auth.setToken(this.token);
+            }
         }
 
-        //   Properties
+        //  Private Variables
 
-        token:GoogleApiOAuth2TokenObject;
+        private clientDetails: IClientDetails;
+        private token: GoogleApiOAuth2TokenObject
 
         //  Public Functions
 
-        logOut():void {
+        logOut(): void {
             console.log("destroying token");
-            this.token = null;
             gapi.auth.signOut();
+
+            this.$cookies.put( GoogleAuthenticationService.cookie_Key, undefined );
+
+            this.$location.path( "/login" );
         }
 
         authenticate(scope:string, immediate:boolean = false):Rx.Observable<GoogleApiOAuth2TokenObject> {
+
             return this.loadClientDetails()
-                .do(clientDetails => {
-                    //console.log( `storing client details: ${clientDetails.client_id}` );
-                    gapi.client.setApiKey(clientDetails.client_id)
+                .flatMap<GoogleApiOAuth2TokenObject>(clientDetails => {
+                    return this.askForAuthentication(clientDetails, scope)
                 })
-                .flatMap<GoogleApiOAuth2TokenObject>(clientDetails => this.askForAuthentication(clientDetails, scope, immediate))
+                .map( token => {
+                    return {
+                        access_token: token.access_token,
+                        error: token.error,
+                        expires_in: token.expires_in,
+                        state: token.state
+                    };
+                } )
                 .safeApply(
                     this.$rootScope,
                     token => {
                         console.log(`token received: ${token.access_token}`);
+                        this.$location.path( "/comments" );
                         this.token = token;
+                        this.$cookies.put( GoogleAuthenticationService.cookie_Key, JSON.stringify(token) );
                     },
                     error => {
                         console.log(`Error authorizing access: ${error}`)
@@ -62,34 +88,59 @@ module Google.Services {
 
         request<T>(args:{ path: string, params?: any }):Rx.Observable<T> {
 
+            if( !this.token ) {
+                console.log( "no token, returning to login screen")
+                this.$location.path( "/login" );
+                return Rx.Observable.throw<T>( "no token specified" );
+            }
+
             const request:HttpRequest<T> = gapi.client.request(args);
 
-            return Rx.Observable.fromPromise<IHasResult<T>>( <any>request)
-                .map( result => { return result.result } )
+            return this.loadClientDetails()
+                .flatMap<T>( _ => {
+
+                    return Rx.Observable.fromPromise<IHasResult<T>>( <any>request)
+                        .map( result => { return result.result } );
+
+                    }
+                );
         }
 
         //  Private Functions
 
-        private askForAuthentication(clientDetails:IClientDetails, scope:string, immediate:boolean = false):Rx.Observable<GoogleApiOAuth2TokenObject> {
+        private askForAuthentication(clientDetails:IClientDetails, scope:string):Rx.Observable<GoogleApiOAuth2TokenObject> {
             //console.log( `Asking for authentication: ${clientDetails.client_id}` );
 
             return Rx.Observable.fromCallback(gapi.auth.authorize)(
-                {client_id: clientDetails.client_id, scope: scope, immediate: immediate}
+                {client_id: clientDetails.client_id, scope: scope, immediate: false, authuser: -1}
             );
         }
 
-        //TODO: Ensure that we only load this once
+        private
+
         private loadClientDetails():Rx.Observable<IClientDetails> {
+
+            if( this.clientDetails ) {
+                console.log( "returning stored client details" );
+
+                Rx.Observable.return<IClientDetails>( this.clientDetails );
+            }
 
             return Rx.Observable.defer<ng.IHttpPromiseCallbackArg<IAppDetails>>(() => {
 
+                    console.log( "load google api client details" );
                     return Rx.Observable.fromPromise<ng.IHttpPromiseCallbackArg<IAppDetails>>(this.$http.get("client_id.json"));
-
                 })
                 .map(callback => {
-                    return callback.data.web
+                    this.clientDetails = callback.data.web;
+
+                    return this.clientDetails;
                 })
-                .retry(3);
+                .retry(3)
+                .do(clientDetails => {
+                    console.log( `client details loaded: ${clientDetails.client_id}` );
+                    gapi.client.setApiKey(clientDetails.client_id)
+                });
 
         }
     }
