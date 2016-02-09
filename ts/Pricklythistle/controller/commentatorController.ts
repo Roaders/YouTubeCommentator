@@ -7,21 +7,27 @@
 module Pricklythistle.Controller {
     import GoogleAuthenticationService = Google.Services.GoogleAuthenticationService;
     import YouTubeService = Google.Services.YouTubeService;
+    import IUserInfo = Google.Services.IUserInfo;
 
     export class CommentatorController {
 
         //  Statics
 
-        static scopes: string = "https://www.googleapis.com/auth/youtube https://googleapis.com/auth/userinfo.profile";
+        static scopes: string = "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.email";
 
         //  Constructor
 
         constructor(
             private googleAuthenticationService: GoogleAuthenticationService,
-            private youTubeService: YouTubeService
+            private youTubeService: YouTubeService,
+            private $rootScope: ng.IScope
         ) {
 
         }
+
+        //  Private Variables
+
+        private userInfo: IUserInfo;
 
         //  Properties
 
@@ -37,12 +43,19 @@ module Pricklythistle.Controller {
 
         authenticate(): void {
             console.log( `requesting authentication` );
-            this.googleAuthenticationService.authenticate( CommentatorController.scopes).subscribe(
-                _ => {
+
+            this.googleAuthenticationService.authenticate( CommentatorController.scopes)
+                .flatMap( _ => {
                     console.log( "Getting user info" );
-                    this.youTubeService.getUserInfo();
-                }
-            );
+
+                    return this.youTubeService.getUserInfo()
+                        .safeApply( this.$rootScope,
+                            userInfoResult => {
+                                console.log("got user info " + JSON.stringify(userInfoResult));
+                                this.userInfo = userInfoResult;
+                            });
+                } )
+                .subscribe();
         }
 
         logOut(): void {

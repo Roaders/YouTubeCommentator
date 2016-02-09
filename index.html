@@ -41,7 +41,19 @@
 <div ng-controller="commentatorController as controller">
 
     <div ng-if="controller.loggedIn">
-        {{controller.message}}
+        <div>{{controller.message}}</div>
+        <div>{{controller.userInfo.name}}</div>
+        <div>{{controller.userInfo.email}}</div>
+        <div>{{controller.userInfo.family_name}}</div>
+        <div>{{controller.userInfo.gender}}</div>
+        <div>{{controller.userInfo.given_name}}</div>
+        <div>{{controller.userInfo.id}}</div>
+        <div><a href="{{controller.userInfo.link}}">{{controller.userInfo.link}}</a></div>
+        <div>{{controller.userInfo.picture}}</div>
+        <div>{{controller.userInfo.verified_email}}</div>
+
+        <img src="{{controller.userInfo.picture}}" />
+
     </div>
 
     <button ng-if="!controller.loggedIn"

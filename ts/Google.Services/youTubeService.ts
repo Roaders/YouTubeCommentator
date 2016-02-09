@@ -4,6 +4,20 @@
 
 module Google.Services {
 
+    import HttpRequest = gapi.client.HttpRequest;
+
+    export interface IUserInfo {
+        email: string,
+        family_name: string,
+        gender: string,
+        given_name: string,
+        id: string,
+        link: string,
+        name: string,
+        picture: string,
+        verified_email: string
+    }
+
     export class YouTubeService {
 
         static userInfo: string = "https://www.googleapis.com/oauth2/v2/userinfo";
@@ -16,15 +30,11 @@ module Google.Services {
 
         //  Functions
 
-        getUserInfo() {
+        getUserInfo(): Rx.Observable<IUserInfo> {
 
             console.log( "loading user info" );
 
-            gapi.client.request( { path: YouTubeService.userInfo }).then( result => {
-                console.log( "result received" );
-            }, error => {
-                console.log( "Error Received" );
-            } )
+            return this.googleAuthenticationService.request<IUserInfo>( { path: YouTubeService.userInfo } );
 
         }
 
