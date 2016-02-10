@@ -1,0 +1,29 @@
+
+<div class="thread">
+	<img
+		class="thread-img"
+		src="{{thread.snippet.topLevelComment.snippet.authorProfileImageUrl}}"
+		height="75"
+		/>
+
+	<div class="thread-content">
+
+		<a
+			href="{{thread.snippet.topLevelComment.snippet.authorChannelUrl}}" 
+			target="_blank"
+			>{{thread.snippet.topLevelComment.snippet.authorDisplayName}}</a>
+
+		<div>
+			created: {{thread.snippet.topLevelComment.snippet.publishedAt}}
+		</div>
+
+		<div>replies: {{thread.replies.comments.length}} out of {{thread.snippet.totalReplyCount}}</div>
+
+	</div>
+
+	<img
+		class="thread-img"
+		src="https://i.ytimg.com/vi/{{thread.snippet.videoId}}/mqdefault.jpg"
+		height="75"
+		/>
+</div>

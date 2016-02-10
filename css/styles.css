@@ -85,6 +85,22 @@ button.google:active {
   padding: 5px;
 }
 
+.thread{
+	margin: 5px;
+	border: solid black 1px;
+    display: flex;
+}
+
+.thread-img {
+	display: inline-block;
+}
+
+.thread-content {
+	display: inline-block;
+	width: 100%;
+	padding: 5px;
+}
+
 .glyphicon-animate {
     -animation: spin .7s infinite linear;
     -webkit-animation: spin2 .7s infinite linear;

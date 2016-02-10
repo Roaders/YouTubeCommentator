@@ -34,11 +34,11 @@ module Pricklythistle.Controller {
 			this.loadingComments = true;
 
 			this.youTubeService.getCommentThreadsForChannel()
+				.take(100)
 				.safeApply(
 					this.$rootScope,
 					thread => {
 						this.threads.push( thread );
-						//console.log( `thread loaded: ${thread.id}` );
 					},
 					error => {
 						this.loadingComments = false;

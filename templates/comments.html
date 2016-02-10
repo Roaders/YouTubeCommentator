@@ -15,5 +15,9 @@
 		<div ng-if="controller.message">
 			{{controller.message}}
 		</div>
+
+		<div class="threadListPane">
+		    <ng-include ng-repeat="thread in controller.threads" src="'templates/thread.html'" ></ng-include>
+		</div>
     </div>
 </div>
