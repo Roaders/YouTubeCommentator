@@ -3,11 +3,15 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "outFile": "app.js",
     "diagnostics": true
   },
   "files": [
     "ts/app.ts",
+    "ts/Google.Services/googleAuthenticationService.ts",
+    "ts/Google.Services/youTubeService.ts",
+    "ts/Pricklythistle/controller/commentatorController.ts",
+    "ts/Pricklythistle/controller/headerController.ts",
+    "ts/Pricklythistle/controller/loginController.ts",
     "node_modules/rx/ts/rx.all.d.ts",
     "node_modules/rx-angular/ts/rx.angular.d.ts",
     "typings/browser.d.ts"

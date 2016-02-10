@@ -60,6 +60,7 @@ module Google.Services {
         }
 
         authenticate(scope:string, immediate:boolean = false):Rx.Observable<GoogleApiOAuth2TokenObject> {
+            console.log( `authenticate scopes: ${scope}` );
 
             return this.loadClientDetails()
                 .flatMap<GoogleApiOAuth2TokenObject>(clientDetails => {
@@ -87,6 +88,7 @@ module Google.Services {
         }
 
         request<T>(args:{ path: string, params?: any }):Rx.Observable<T> {
+            console.log( `make request for: ${args.path}` );
 
             if( !this.token ) {
                 console.log( "no token, returning to login screen")
@@ -98,18 +100,20 @@ module Google.Services {
 
             return this.loadClientDetails()
                 .flatMap<T>( _ => {
-
                     return Rx.Observable.fromPromise<IHasResult<T>>( <any>request)
                         .map( result => { return result.result } );
-
                     }
+                )
+                .do(
+                  _ => {console.log(`result returned for path: ${args.path}`)},
+                  error => { console.log( `error returned for path: ${args.path} Error: ${error}` ) }
                 );
         }
 
         //  Private Functions
 
         private askForAuthentication(clientDetails:IClientDetails, scope:string):Rx.Observable<GoogleApiOAuth2TokenObject> {
-            //console.log( `Asking for authentication: ${clientDetails.client_id}` );
+            console.log( `Asking for authentication: ${clientDetails.client_id}` );
 
             return Rx.Observable.fromCallback(gapi.auth.authorize)(
                 {client_id: clientDetails.client_id, scope: scope, immediate: false, authuser: -1}
@@ -118,7 +122,6 @@ module Google.Services {
 
         //TODO: Make sure we only do this once
         private loadClientDetails():Rx.Observable<IClientDetails> {
-            console.log( "load client details" )
 
             if( !this.clientDetailsStream ) {
                 console.log( "creating new client details stream" );
@@ -136,7 +139,8 @@ module Google.Services {
                     .do(clientDetails => {
                         console.log( `client details loaded: ${clientDetails.client_id}` );
                         gapi.client.setApiKey(clientDetails.client_id)
-                    }).publish();
+                    })
+                    .share();
             }
 
             return this.clientDetailsStream;

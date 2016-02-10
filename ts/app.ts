@@ -2,13 +2,6 @@
  * Created by Giles on 08/02/2016.
  */
 
-///<reference path="Pricklythistle/Controller/commentatorController.ts"/>
-///<reference path="Pricklythistle/Controller/loginController.ts"/>
-///<reference path="Pricklythistle/Controller/headerController.ts"/>
-
-///<reference path="Google.Services/googleAuthenticationService.ts"/>
-///<reference path="Google.Services/youTubeService.ts"/>
-
 import CommentatorController = Pricklythistle.Controller.CommentatorController;
 import LoginController = Pricklythistle.Controller.LoginController;
 import HeaderController = Pricklythistle.Controller.HeaderController;

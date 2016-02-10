@@ -2,3 +2,5 @@ node_modules/
 typings/
 app.js
 app.js.map
+ts/**/*.js.map
+ts/**/*.js
