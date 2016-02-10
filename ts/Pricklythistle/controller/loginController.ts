@@ -11,7 +11,7 @@ module Pricklythistle.Controller {
 
     export class LoginController {
 
-        static scopes: string = "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.email";
+        static scopes: string = "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube.force-ssl";
 
         //  Constructor
 

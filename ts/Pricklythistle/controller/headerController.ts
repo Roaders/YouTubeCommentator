@@ -18,7 +18,6 @@ module Pricklythistle.Controller {
             private youTubeService: YouTubeService,
             private $rootScope: ng.IScope
         ) {
-            console.log( "HeaderController");
             this.loadUserInfo();
         }
 
@@ -29,7 +28,6 @@ module Pricklythistle.Controller {
         //  Public Functions
 
         logOut(): void {
-            console.log( `logging out` );
             this.googleAuthenticationService.logOut();
             this.userInfo = null;
         }
@@ -37,7 +35,6 @@ module Pricklythistle.Controller {
         //  Private Functions
 
         private loadUserInfo(): void {
-            console.log( "HeaderController loading userInfo" );
 
             this.youTubeService.getUserInfo()
                 .safeApply(

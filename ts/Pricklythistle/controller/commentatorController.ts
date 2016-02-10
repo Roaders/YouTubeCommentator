@@ -17,6 +17,23 @@ module Pricklythistle.Controller {
             private youTubeService: YouTubeService,
             private $rootScope: ng.IScope
         ) {
+            this.loadCommentThreads();
+        }
+
+        //  Properties
+
+        //  Private Functions
+
+        private loadCommentThreads(): void {
+
+            this.youTubeService.getCommentThreads()
+                .safeApply(
+                    this.$rootScope,
+                    channels => {
+                        console.log( `Comments Loaded` );
+                    }
+                )
+                .subscribe();
         }
 
     }

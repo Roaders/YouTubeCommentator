@@ -15,7 +15,7 @@ module Google.Services {
         "project_id": string,
         "auth_uri": string,
         "token_uri": string,
-        "auth_provider_x509_cert_url": string,
+        "auth_provider_x509_cert_url": string
     }
 
     interface IHasResult<T>{
@@ -37,15 +37,15 @@ module Google.Services {
             private $cookies : angular.cookies.ICookiesService
         ) {
             if( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) ) {
-                console.log( "setting api token from cookie" );
                 this.token = JSON.parse( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) );
+                console.log( "setting api token from cookie: " + this.token.access_token );
                 gapi.auth.setToken(this.token);
             }
         }
 
         //  Private Variables
 
-        private clientDetails: IClientDetails;
+        private clientDetailsStream: Rx.Observable<IClientDetails>;
         private token: GoogleApiOAuth2TokenObject
 
         //  Public Functions
@@ -116,31 +116,30 @@ module Google.Services {
             );
         }
 
-        private
-
+        //TODO: Make sure we only do this once
         private loadClientDetails():Rx.Observable<IClientDetails> {
+            console.log( "load client details" )
 
-            if( this.clientDetails ) {
-                console.log( "returning stored client details" );
+            if( !this.clientDetailsStream ) {
+                console.log( "creating new client details stream" );
 
-                Rx.Observable.return<IClientDetails>( this.clientDetails );
+                this.clientDetailsStream = Rx.Observable.return<string>( "client_id.json" )
+                    .flatMap<ng.IHttpPromiseCallbackArg<IAppDetails>>( url => {
+                        console.log( "loading url: " + url);
+                        return Rx.Observable.fromPromise<ng.IHttpPromiseCallbackArg<IAppDetails>>( this.$http.get( url ) );
+                    } )
+                    .retry(3)
+                    .map(callback => {
+                        console.log( "mapping client details callback" );
+                        return callback.data.web;
+                    })
+                    .do(clientDetails => {
+                        console.log( `client details loaded: ${clientDetails.client_id}` );
+                        gapi.client.setApiKey(clientDetails.client_id)
+                    }).publish();
             }
 
-            return Rx.Observable.defer<ng.IHttpPromiseCallbackArg<IAppDetails>>(() => {
-
-                    console.log( "load google api client details" );
-                    return Rx.Observable.fromPromise<ng.IHttpPromiseCallbackArg<IAppDetails>>(this.$http.get("client_id.json"));
-                })
-                .map(callback => {
-                    this.clientDetails = callback.data.web;
-
-                    return this.clientDetails;
-                })
-                .retry(3)
-                .do(clientDetails => {
-                    console.log( `client details loaded: ${clientDetails.client_id}` );
-                    gapi.client.setApiKey(clientDetails.client_id)
-                });
+            return this.clientDetailsStream;
 
         }
     }
