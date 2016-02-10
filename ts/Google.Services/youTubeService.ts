@@ -18,8 +18,46 @@ module Google.Services {
         verified_email: string
     }
 
+    export interface IComment {
+        id: string;
+        snippet: {
+            channelId: string;
+            videoId: string;
+            textDisplay: string;
+            textOriginal: string;
+            parentId: string;
+            authorDisplayName: string;
+            authorProfileImageUrl: string;
+            authorChannelUrl: string;
+            authorGoogleplusProfileUrl: string;
+            canRate: boolean;
+            viewerRating: string;
+            likeCount: number;
+            publishedAt: string;
+            updatedAt: string;
+        };
+    }
+
+	export interface ICommentThreadList {
+		items: ICommentThread[];
+		nextPageToken: string;
+		pageInfo: {
+			totalResults: number;
+			resultsPerPage: number;
+		};
+	}
+
     export interface ICommentThread {
         id: string;
+        snippet: {
+          channelId: string;
+          videoId: string;
+          topLevelComment: IComment;
+          canreply: boolean;
+          totalReplyCount: number;
+          isPublic: boolean;
+        };
+        replies: { comments: IComment[] };
     }
 
     export interface IChannel {
@@ -42,15 +80,14 @@ module Google.Services {
         //  Functions
 
         getUserInfo(): Rx.Observable<IUserInfo> {
-
-            console.log( "YouTubeService loading user info" );
+            console.log( "loading user info" );
 
             return this.googleAuthenticationService.request<IUserInfo>( { path: YouTubeService.userInfo } );
 
         }
 
         getChannelList(): Rx.Observable<IChannel[]> {
-            console.log( "YouTubeService loading channel list" );
+            console.log( "loading channel list" );
 
             return this.googleAuthenticationService.request<any>( {
                     path: YouTubeService.channels,
@@ -59,20 +96,53 @@ module Google.Services {
                 .map<IChannel[]>( result => { return result.items } );
         }
 
-        getCommentThreads(): Rx.Observable<ICommentThread[]> {
-            console.log( "YouTubeService loading comment threads" );
+        getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
+            console.log( "loading comment threads");
 
             return this.getChannelList()
                 .flatMap<IChannel>(  channelList => Rx.Observable.from(channelList)  )
-                .flatMap<any>( channel => {
-                    return this.googleAuthenticationService.request<any>( {
-                        path: YouTubeService.commentThreads,
-                        params: { part: "id,snippet,replies", allThreadsRelatedToChannelId: channel.id, maxResults: "100" }
-                    })}
-                )
-                .map( commentThreadList => commentThreadList.items );
+                .flatMap( channel => this.loadCommentThreads( channel ) )
+				.flatMap( thread => {
+
+					if( thread.replies && thread.replies.comments.length < thread.snippet.totalReplyCount ) {
+						console.log(`thread ${thread.id} loaded with ${thread.replies.comments.length} replies out of ${thread.snippet.totalReplyCount}`);
+					}
+
+					return Rx.Observable.return<ICommentThread>(thread);
+				});
         }
 
-    }
+		// Private Functions
 
+		private loadCommentThreads( channel: IChannel, pageToken?: string, maxResults?: number ): Rx.Observable<ICommentThread> {
+
+				maxResults = maxResults || 20;
+				maxResults = Math.min( maxResults, 100 );
+
+				return Rx.Observable.defer<ICommentThreadList>( () => {
+					return this.googleAuthenticationService.request<ICommentThreadList>( {
+						path: YouTubeService.commentThreads,
+						params: {
+						  part: "id,snippet,replies",
+						  fields: "items(id,replies,snippet),nextPageToken,pageInfo",
+						  allThreadsRelatedToChannelId: channel.id,
+						  pageToken: pageToken,
+						  maxResults: maxResults
+						}
+					})
+				} )
+				.retry(3)
+				.flatMap( commentThreadList => {
+					console.log( `Comment thread loaded: ${commentThreadList.pageInfo.totalResults} ${commentThreadList.pageInfo.resultsPerPage} (${commentThreadList.nextPageToken})`);
+
+					const threads = Rx.Observable.from<ICommentThread>(commentThreadList.items)
+
+					if( commentThreadList.nextPageToken ) {
+						return threads.concat( this.loadCommentThreads( channel, commentThreadList.nextPageToken, maxResults + 20 ) );
+					}
+
+					return threads;
+				});
+		}
+    }
 }

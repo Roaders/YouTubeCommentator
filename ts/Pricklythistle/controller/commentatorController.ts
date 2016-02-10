@@ -3,37 +3,53 @@
  */
 
 module Pricklythistle.Controller {
-    import GoogleAuthenticationService = Google.Services.GoogleAuthenticationService;
-    import YouTubeService = Google.Services.YouTubeService;
-    import IUserInfo = Google.Services.IUserInfo;
+	import GoogleAuthenticationService = Google.Services.GoogleAuthenticationService;
+	import YouTubeService = Google.Services.YouTubeService;
+	import IUserInfo = Google.Services.IUserInfo;
+	import ICommentThread = Google.Services.ICommentThread;
 
-    export class CommentatorController {
+	export class CommentatorController {
 
-        //  Constructor
+		//  Constructor
 
-        constructor(
-            private youTubeService: YouTubeService,
-            private $rootScope: ng.IScope
-        ) {
-            this.loadCommentThreads();
-        }
+		constructor(
+			private youTubeService: YouTubeService,
+			private $rootScope: ng.IScope
+		) {
+			this.loadCommentThreads();
+		}
 
-        //  Properties
+		//  Properties
 
-        //  Private Functions
+		loadingComments: boolean;
+		threads: ICommentThread[];
+		message: string;
 
-        private loadCommentThreads(): void {
+		//  Private Functions
 
-            this.youTubeService.getCommentThreads()
-                .safeApply(
-                    this.$rootScope,
-                    channels => {
-                        console.log( `Comments Loaded` );
-                    }
-                )
-                .subscribe();
-        }
+		private loadCommentThreads(): void {
 
-    }
+			console.time( "loading all comment threads" );
+			this.threads = [];
+			this.loadingComments = true;
 
+			this.youTubeService.getCommentThreadsForChannel()
+				.safeApply(
+					this.$rootScope,
+					thread => {
+						this.threads.push( thread );
+						//console.log( `thread loaded: ${thread.id}` );
+					},
+					error => {
+						this.loadingComments = false;
+						this.message = `Error loading threads. Status: ${error.result.error.code} (${error.result.error.message})`
+					},
+					() => {
+						console.timeEnd( "loading all comment threads" );
+						this.loadingComments = false;
+					}
+				)
+				.subscribe();
+		}
+	}
 }

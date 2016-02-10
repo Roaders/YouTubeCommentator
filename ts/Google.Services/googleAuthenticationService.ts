@@ -45,6 +45,7 @@ module Google.Services {
 
         //  Private Variables
 
+        private clientDetails: IClientDetails;
         private clientDetailsStream: Rx.Observable<IClientDetails>;
         private token: GoogleApiOAuth2TokenObject
 
@@ -112,6 +113,22 @@ module Google.Services {
 
         //  Private Functions
 
+        private getPath( args:{ path: string, params?: any } ): string {
+            var urlParams: string = "";
+
+            args.params = args.params || {};
+
+            args.params.access_token = this.token.access_token;
+
+            for( var paramName in args.params ) {
+                urlParams += urlParams === "" ? "?" : "&";
+                urlParams += paramName + "=";
+                urlParams += encodeURIComponent( args.params[paramName] );
+            }
+
+            return args.path + urlParams;
+        }
+
         private askForAuthentication(clientDetails:IClientDetails, scope:string):Rx.Observable<GoogleApiOAuth2TokenObject> {
             console.log( `Asking for authentication: ${clientDetails.client_id}` );
 
@@ -120,25 +137,27 @@ module Google.Services {
             );
         }
 
-        //TODO: Make sure we only do this once
         private loadClientDetails():Rx.Observable<IClientDetails> {
 
+            if( this.clientDetails ) {
+                return Rx.Observable.return<IClientDetails>(this.clientDetails);
+            }
+
             if( !this.clientDetailsStream ) {
-                console.log( "creating new client details stream" );
 
                 this.clientDetailsStream = Rx.Observable.return<string>( "client_id.json" )
                     .flatMap<ng.IHttpPromiseCallbackArg<IAppDetails>>( url => {
-                        console.log( "loading url: " + url);
+                        console.log( "loading client details from url: " + url);
                         return Rx.Observable.fromPromise<ng.IHttpPromiseCallbackArg<IAppDetails>>( this.$http.get( url ) );
                     } )
                     .retry(3)
                     .map(callback => {
-                        console.log( "mapping client details callback" );
                         return callback.data.web;
                     })
                     .do(clientDetails => {
                         console.log( `client details loaded: ${clientDetails.client_id}` );
-                        gapi.client.setApiKey(clientDetails.client_id)
+                        gapi.client.setApiKey(clientDetails.client_id);
+                        this.clientDetails = clientDetails;
                     })
                     .share();
             }

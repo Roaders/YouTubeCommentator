@@ -1,9 +1,19 @@
 
-
 <div class="site-content">
 
     <ng-include src="'templates/header.html'" ></ng-include>
 
-    <h1>Comments</h1>
+    <div class="commentsPane">
+        <h1>Comments</h1>
 
+        <div ng-if="controller.loadingComments" class="vertical-align">
+            <span>Loading...</span>
+			<span ng-if="controller.threads.length > 0">({{controller.threads.length}} loaded)</span>
+            <span class="glyphicon glyphicon-refresh glyphicon-animate" aria-hidden="true"></span>
+        </div>
+
+		<div ng-if="controller.message">
+			{{controller.message}}
+		</div>
+    </div>
 </div>
