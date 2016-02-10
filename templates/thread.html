@@ -15,7 +15,7 @@
 
 		<div>
 			created:
-			{{thread.snippet.topLevelComment.snippet.publishedAt.toDateString()}}
+			{{thread.snippet.topLevelComment.snippet.publishedAt | date:'medium'}}
 		</div>
 
 		<div ng-if="thread.snippet.totalReplyCount > 0">replies: {{thread.replies.comments.length}} out of {{thread.snippet.totalReplyCount}}</div>

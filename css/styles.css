@@ -102,6 +102,9 @@ button.google:active {
 }
 
 .reply{
+	margin-right: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	margin-left: 80px;
 	border: solid black 1px;
     display: flex;
