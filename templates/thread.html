@@ -9,15 +9,16 @@
 	<div class="thread-content">
 
 		<a
-			href="{{thread.snippet.topLevelComment.snippet.authorChannelUrl}}" 
+			href="{{thread.snippet.topLevelComment.snippet.authorChannelUrl}}"
 			target="_blank"
 			>{{thread.snippet.topLevelComment.snippet.authorDisplayName}}</a>
 
 		<div>
-			created: {{thread.snippet.topLevelComment.snippet.publishedAt}}
+			created:
+			{{thread.snippet.topLevelComment.snippet.publishedAt.toDateString()}}
 		</div>
 
-		<div>replies: {{thread.replies.comments.length}} out of {{thread.snippet.totalReplyCount}}</div>
+		<div ng-if="thread.snippet.totalReplyCount > 0">replies: {{thread.replies.comments.length}} out of {{thread.snippet.totalReplyCount}}</div>
 
 	</div>
 
@@ -27,3 +28,5 @@
 		height="75"
 		/>
 </div>
+
+<ng-include ng-repeat="reply in thread.replies.comments" src="'templates/reply.html'" ></ng-include>

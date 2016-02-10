@@ -33,8 +33,8 @@ module Google.Services {
             canRate: boolean;
             viewerRating: string;
             likeCount: number;
-            publishedAt: string;
-            updatedAt: string;
+            publishedAt: Date;
+            updatedAt: Date;
         };
     }
 
@@ -103,16 +103,18 @@ module Google.Services {
                 .flatMap<IChannel>(  channelList => Rx.Observable.from(channelList)  )
                 .flatMap( channel => this.loadCommentThreads( channel ) )
 				.flatMap( thread => {
-
-					if( thread.replies && thread.replies.comments.length < thread.snippet.totalReplyCount ) {
-						console.log(`thread ${thread.id} loaded with ${thread.replies.comments.length} replies out of ${thread.snippet.totalReplyCount}`);
-					}
+					this.parseComment( thread.snippet.topLevelComment );
 
 					return Rx.Observable.return<ICommentThread>(thread);
 				});
         }
 
 		// Private Functions
+
+		private parseComment( comment: IComment ): void {
+			comment.snippet.publishedAt = new Date( Date.parse( <any>comment.snippet.publishedAt ) );
+			comment.snippet.updatedAt = new Date( Date.parse( <any>comment.snippet.updatedAt ) );
+		}
 
 		private loadCommentThreads( channel: IChannel, pageToken?: string, maxResults?: number ): Rx.Observable<ICommentThread> {
 

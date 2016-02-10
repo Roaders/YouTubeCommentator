@@ -101,6 +101,12 @@ button.google:active {
 	padding: 5px;
 }
 
+.reply{
+	margin-left: 80px;
+	border: solid black 1px;
+    display: flex;
+}
+
 .glyphicon-animate {
     -animation: spin .7s infinite linear;
     -webkit-animation: spin2 .7s infinite linear;
