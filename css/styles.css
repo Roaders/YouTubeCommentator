@@ -82,8 +82,8 @@ button.google:active {
     margin: 5px;
 }
 
-.commentsPane {
-  padding: 5px;
+.comments-pane {
+  padding: 10px;
 }
 
 .thread-list-pane{
@@ -100,7 +100,7 @@ button.google:active {
 	margin-right: 5px;
 	margin-top: 5px;
 	margin-bottom: 5px;
-	margin-left: 80px;
+	margin-left: 85px;
 }
 
 .thread-img, .reply-img {

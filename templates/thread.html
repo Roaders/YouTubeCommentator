@@ -2,7 +2,7 @@
 <div class="thread">
 	<img
 		class="thread-img"
-		src="{{thread.snippet.topLevelComment.snippet.authorProfileImageUrl}}"
+		src="{{threadController.authorProfileImageUrl}}"
 		height="75"
 		/>
 
@@ -11,26 +11,30 @@
 		<div class="thread-header">
 			<a
 				class="thread-username"
-				href="{{thread.snippet.topLevelComment.snippet.authorChannelUrl}}"
+				href="{{threadController.authorChannelUrl}}"
 				target="_blank"
-				>{{thread.snippet.topLevelComment.snippet.authorDisplayName}}</a>
+				>{{threadController.authorDisplayName}}</a>
 
 			<div class="thread-date">
-				{{thread.snippet.topLevelComment.snippet.publishedAt | date:'medium'}}
+				{{threadController.publishedAt | date:'medium'}}
 			</div>
 
 		</div>
 
 		<!-- TODO: Display html -->
-		<div class="thread-text">{{thread.snippet.topLevelComment.snippet.textDisplay}}</div>
+		<!-- TODO: Only show a few lines and expand -->
+		<div class="thread-text">{{threadController.textDisplay}}</div>
 
 	</div>
-
-	<img
+	<a
 		class="thread-img"
-		src="https://i.ytimg.com/vi/{{thread.snippet.videoId}}/mqdefault.jpg"
-		height="75"
-		/>
+		href="{{threadController.videoUrl}}"
+		target="_blank">
+		<img
+			src="{{threadController.videoImageUrl}}"
+			height="75"
+			/>
+	</a>
 </div>
 
 <ng-include ng-repeat="reply in thread.replies.comments" src="'templates/reply.html'" ></ng-include>

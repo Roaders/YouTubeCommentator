@@ -17,7 +17,12 @@
 		</div>
 
 		<div class="thread-list-pane">
-		    <ng-include ng-repeat="thread in controller.threads" src="'templates/thread.html'" ></ng-include>
+		    <ng-include
+				ng-repeat="thread in controller.threads | orderBy:'thread.snippet.topLevelComment.snippet.publishedAt'"
+				src="'templates/thread.html'"
+				ng-controller="threadController as threadController"
+				ng-init="threadController.init( thread )"
+				></ng-include>
 		</div>
     </div>
 </div>

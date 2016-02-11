@@ -98,7 +98,8 @@ module Google.Services {
                 .map<IChannel[]>( result => { return result.items } );
         }
 
-		//TODO - limit concurrency
+		// TODO: Limit Concurrency
+		// TODO: Batch comment loads
         getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
             console.log( "loading comment threads");
 
@@ -106,7 +107,6 @@ module Google.Services {
                 .flatMap<IChannel>(  channelList => Rx.Observable.from(channelList)  )
                 .flatMap( channel => this.loadCommentThreads( channel ) )
 				.flatMap( thread => {
-					this.parseComment( thread.snippet.topLevelComment );
 
 					var replyStream: Rx.Observable<IComment>;
 
@@ -120,6 +120,12 @@ module Google.Services {
 
 					return Rx.Observable.combineLatest<IComment[],IComment,ICommentThread>(
 						replyStream.toArray(), commentStream, (replies, topComment) => {
+								this.parseComment( topComment );
+
+								replies.forEach( reply => {
+									this.parseComment( reply );
+								} );
+
 								thread.replies = {comments: replies}
 								thread.snippet.topLevelComment = topComment;
 								return thread;

@@ -34,7 +34,7 @@ module Pricklythistle.Controller {
 			this.loadingComments = true;
 
 			this.youTubeService.getCommentThreadsForChannel()
-				.take(100)
+				.take(30)
 				.safeApply(
 					this.$rootScope,
 					thread => {
