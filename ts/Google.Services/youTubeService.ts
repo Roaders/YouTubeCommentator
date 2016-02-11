@@ -181,7 +181,7 @@ module Google.Services {
 					params: {
 					  part: "id,snippet",
 					  fields: "items(id,snippet),nextPageToken",
-					  textFormat: "plainText",
+					  textFormat: "html",
 					  parentId: thread.id,
 					  pageToken: pageToken,
 					  maxResults: 100

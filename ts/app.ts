@@ -7,7 +7,7 @@ import IComment = Google.Services.IComment;
 import ThreadController = Pricklythistle.Controller.ThreadController;
 import ReplyController = Pricklythistle.Controller.ReplyController;
 
-const app: ng.IModule = angular.module( "youTubeCommentator", [ "ngRoute", "ngCookies" ] );
+const app: ng.IModule = angular.module( "youTubeCommentator", [ "ngRoute", "ngCookies", "ngSanitize" ] );
 
 app.controller( "commentatorController", Pricklythistle.Controller.CommentatorController )
 	.controller( "loginController", Pricklythistle.Controller.LoginController )
