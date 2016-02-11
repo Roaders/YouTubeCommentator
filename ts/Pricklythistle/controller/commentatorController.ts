@@ -45,7 +45,7 @@ module Pricklythistle.Controller {
 			console.time( "loading all comment threads" );
 			this._threads = [];
 			this.loadingCount = "";
-			this.displayLimit = 10;
+			this.displayLimit = 20;
 
 			this.youTubeService.getCommentThreadsForChannel()
 				.bufferWithTime(100)

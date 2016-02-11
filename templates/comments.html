@@ -1,9 +1,13 @@
 
-<div class="site-content">
+<div class="site-content"
+	>
 
     <ng-include src="'templates/header.html'" ></ng-include>
 
-    <div class="comments-pane">
+    <div class="comments-pane"
+		infinite-scroll="controller.displayMore()"
+		infinite-scroll-distance='2'
+		>
         <h1>Comments</h1>
 
         <div ng-if="controller.loadingCount" class="vertical-align">
@@ -24,5 +28,4 @@
 		</div>
     </div>
 
-	<button ng-click="controller.displayMore()">Display More</button>
 </div>

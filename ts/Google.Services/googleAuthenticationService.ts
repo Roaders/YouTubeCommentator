@@ -93,7 +93,6 @@ module Google.Services {
 
 		    return this.loadClientDetails()
 		        .flatMap<T>( clientDetails => {
-					console.log( `creating request for: ${args.path}` );
 		            const request:HttpRequest<T> = gapi.client.request(args);
 		            return Rx.Observable.fromPromise<IHasResult<T>>( <any>request)
 		                .map( result => { return result.result } );
@@ -176,7 +175,6 @@ module Google.Services {
         private loadClientDetails():Rx.Observable<IClientDetails> {
 
             if( this.clientDetails ) {
-				console.log(`returning saved client details`);
                 return Rx.Observable.return<IClientDetails>(this.clientDetails);
             }
 

@@ -9,7 +9,7 @@ import ReplyController = Pricklythistle.Controller.ReplyController;
 
 const scopes: string = "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube.force-ssl";
 
-const app: ng.IModule = angular.module( "youTubeCommentator", [ "ngRoute", "ngCookies", "ngSanitize" ] );
+const app: ng.IModule = angular.module( "youTubeCommentator", [ "ngRoute", "ngCookies", "ngSanitize", "infinite-scroll" ] );
 
 app.controller( "commentatorController", Pricklythistle.Controller.CommentatorController )
 	.controller( "loginController", Pricklythistle.Controller.LoginController )
