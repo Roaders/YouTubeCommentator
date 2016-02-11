@@ -41,10 +41,11 @@ module Google.Services {
 	export interface ICommentThreadList {
 		items: ICommentThread[];
 		nextPageToken: string;
-		pageInfo: {
-			totalResults: number;
-			resultsPerPage: number;
-		};
+	}
+
+	export interface ICommentList {
+		items: IComment[];
+		nextPageToken: string;
 	}
 
     export interface ICommentThread {
@@ -70,6 +71,7 @@ module Google.Services {
         static userInfo: string = "https://www.googleapis.com/oauth2/v2/userinfo";
         static channels: string = "https://www.googleapis.com/youtube/v3/channels";
         static commentThreads: string = "https://www.googleapis.com/youtube/v3/commentThreads";
+        static comments: string = "https://www.googleapis.com/youtube/v3/comments";
 
         //  Constructor
 
@@ -96,6 +98,7 @@ module Google.Services {
                 .map<IChannel[]>( result => { return result.items } );
         }
 
+		//TODO - limit concurrency
         getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
             console.log( "loading comment threads");
 
@@ -105,7 +108,23 @@ module Google.Services {
 				.flatMap( thread => {
 					this.parseComment( thread.snippet.topLevelComment );
 
-					return Rx.Observable.return<ICommentThread>(thread);
+					var replyStream: Rx.Observable<IComment>;
+
+					if( thread.snippet.totalReplyCount > 0 ) {
+						replyStream = this.loadReplies(thread);
+					} else {
+						replyStream = Rx.Observable.empty<IComment>();
+					}
+
+					var commentStream: Rx.Observable<IComment> = this.loadTopComment(thread);
+
+					return Rx.Observable.combineLatest<IComment[],IComment,ICommentThread>(
+						replyStream.toArray(), commentStream, (replies, topComment) => {
+								thread.replies = {comments: replies}
+								thread.snippet.topLevelComment = topComment;
+								return thread;
+							}
+						);
 				});
         }
 
@@ -114,6 +133,52 @@ module Google.Services {
 		private parseComment( comment: IComment ): void {
 			comment.snippet.publishedAt = new Date( Date.parse( <any>comment.snippet.publishedAt ) );
 			comment.snippet.updatedAt = new Date( Date.parse( <any>comment.snippet.updatedAt ) );
+		}
+
+		private loadTopComment( thread: ICommentThread ): Rx.Observable<IComment> {
+
+			return Rx.Observable.defer<ICommentList>( () => {
+				return this.googleAuthenticationService.request<ICommentList>( {
+					path: YouTubeService.comments,
+					params: {
+					  part: "id,snippet",
+					  fields: "items(id,snippet)",
+					  textFormat: "plainText",
+					  id: thread.id
+					}
+				})
+			} )
+			.retry(3)
+			.map( commentList => commentList.items[0] );
+		}
+
+		private loadReplies( thread: ICommentThread, pageToken?: string ): Rx.Observable<IComment> {
+
+			return Rx.Observable.defer<ICommentList>( () => {
+				return this.googleAuthenticationService.request<ICommentList>( {
+					path: YouTubeService.comments,
+					params: {
+					  part: "id,snippet",
+					  fields: "items(id,snippet),nextPageToken",
+					  textFormat: "plainText",
+					  parentId: thread.id,
+					  pageToken: pageToken,
+					  maxResults: 100
+					}
+				})
+			} )
+			.retry(3)
+			.flatMap( commentList => {
+				console.log( `Replies loaded: (${commentList.nextPageToken})`);
+
+				const comments = Rx.Observable.from<IComment>(commentList.items)
+
+				if( commentList.nextPageToken ) {
+					return comments.concat( this.loadReplies( thread, commentList.nextPageToken ) );
+				}
+
+				return comments;
+			});
 		}
 
 		private loadCommentThreads( channel: IChannel, pageToken?: string, maxResults?: number ): Rx.Observable<ICommentThread> {
@@ -125,8 +190,8 @@ module Google.Services {
 					return this.googleAuthenticationService.request<ICommentThreadList>( {
 						path: YouTubeService.commentThreads,
 						params: {
-						  part: "id,snippet,replies",
-						  fields: "items(id,replies,snippet),nextPageToken,pageInfo",
+						  part: "id,snippet",
+						  fields: "items(id,snippet),nextPageToken",
 						  allThreadsRelatedToChannelId: channel.id,
 						  pageToken: pageToken,
 						  maxResults: maxResults
@@ -135,7 +200,7 @@ module Google.Services {
 				} )
 				.retry(3)
 				.flatMap( commentThreadList => {
-					console.log( `Comment thread loaded: ${commentThreadList.pageInfo.totalResults} ${commentThreadList.pageInfo.resultsPerPage} (${commentThreadList.nextPageToken})`);
+					console.log( `Comment thread loaded: (${commentThreadList.nextPageToken})`);
 
 					const threads = Rx.Observable.from<ICommentThread>(commentThreadList.items)
 

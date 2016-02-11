@@ -3,7 +3,7 @@
 
     <ng-include src="'templates/header.html'" ></ng-include>
 
-    <div class="commentsPane">
+    <div class="comments-pane">
         <h1>Comments</h1>
 
         <div ng-if="controller.loadingComments" class="vertical-align">
@@ -16,7 +16,7 @@
 			{{controller.message}}
 		</div>
 
-		<div class="threadListPane">
+		<div class="thread-list-pane">
 		    <ng-include ng-repeat="thread in controller.threads" src="'templates/thread.html'" ></ng-include>
 		</div>
     </div>

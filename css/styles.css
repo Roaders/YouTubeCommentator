@@ -85,6 +85,10 @@ button.google:active {
   padding: 5px;
 }
 
+.thread-list-pane{
+	width: 500px;
+}
+
 .thread{
 	margin: 5px;
 	border: solid black 1px;

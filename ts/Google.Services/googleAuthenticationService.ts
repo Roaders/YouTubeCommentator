@@ -22,6 +22,7 @@ module Google.Services {
         result: T
     }
 
+	// TODO: figure out refresh
     export class GoogleAuthenticationService {
 
         //  Statics

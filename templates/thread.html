@@ -14,11 +14,13 @@
 			>{{thread.snippet.topLevelComment.snippet.authorDisplayName}}</a>
 
 		<div>
-			created:
 			{{thread.snippet.topLevelComment.snippet.publishedAt | date:'medium'}}
 		</div>
 
 		<div ng-if="thread.snippet.totalReplyCount > 0">replies: {{thread.replies.comments.length}} out of {{thread.snippet.totalReplyCount}}</div>
+
+		<!-- TODO: Display html -->
+		<div>{{thread.snippet.topLevelComment.snippet.textDisplay}}</div>
 
 	</div>
 

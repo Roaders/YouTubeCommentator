@@ -32,7 +32,9 @@ module Pricklythistle.Controller {
 
         //  Private Functions
 
-        private loadUserInfo(): void {
+        loadUserInfo(): void {
+
+			this.userInfo = null;
 
             this.youTubeService.getUserInfo()
                 .safeApply(

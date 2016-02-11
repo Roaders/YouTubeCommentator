@@ -10,12 +10,17 @@
 	<div class="thread-content">
 
 		<a
+			class="reply-username"
 			href="{{reply.snippet.authorChannelUrl}}"
 			target="_blank"
 			>{{reply.snippet.authorDisplayName}}</a>
 
-		<div>
-			created: {{reply.snippet.publishedAt | date:'medium'}}
+		<div class="reply-date">
+			{{reply.snippet.publishedAt | date:'medium'}}
+		</div>
+
+		<div class="reply-content">
+			{{reply.snippet.textDisplay}}
 		</div>
 	</div>
 
