@@ -20,12 +20,9 @@ module Pricklythistle.Controller {
 			this.loadCommentThreads();
 		}
 
-		// Private Variables
-
-		private allThreads: ThreadController[];
-
 		//  Properties
 
+		displayLimit: number;
 		loadingCount: string;
 		message: string;
 
@@ -35,28 +32,33 @@ module Pricklythistle.Controller {
 			return this._threads;
 		}
 
+		// Public Functions
+
+		displayMore() : void {
+			this.displayLimit += 20;
+		}
+
 		//  Private Functions
 
 		private loadCommentThreads(): void {
 
 			console.time( "loading all comment threads" );
-			this.allThreads = [];
+			this._threads = [];
 			this.loadingCount = "";
+			this.displayLimit = 10;
 
 			this.youTubeService.getCommentThreadsForChannel()
-				.take(500)
 				.bufferWithTime(100)
 				.safeApply(
 					this.$rootScope,
 					threadList => {
 						threadList.forEach( thread => {
-							this.allThreads.push( new ThreadController( thread, this.$filter ) )
+							this._threads.push( new ThreadController( thread, this.$filter ) )
 						});
 
-						this.loadingCount = this.allThreads.length > 0 ? this.allThreads.length.toString() : "";
+						this.loadingCount = this._threads.length > 0 ? this._threads.length.toString() : "";
 
-						this.allThreads = this.$filter( 'orderBy' )(this.allThreads, 'latestReply', true);
-						this._threads = this.allThreads.slice(0, 100);
+						this._threads = this.$filter( 'orderBy' )(this._threads, 'latestReply', true);
 					},
 					error => {
 						this.loadingCount = undefined;

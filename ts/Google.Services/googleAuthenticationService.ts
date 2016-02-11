@@ -35,7 +35,8 @@ module Google.Services {
             private $http:ng.IHttpService,
             private $rootScope:ng.IScope,
             private $location: ng.ILocationService,
-            private $cookies : angular.cookies.ICookiesService
+            private $cookies : angular.cookies.ICookiesService,
+			private authorizationScopes: string
         ) {
             if( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) ) {
                 this.token = JSON.parse( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) );
@@ -48,7 +49,8 @@ module Google.Services {
 
         private clientDetails: IClientDetails;
         private clientDetailsStream: Rx.Observable<IClientDetails>;
-        private token: GoogleApiOAuth2TokenObject
+        private token: GoogleApiOAuth2TokenObject;
+		private refreshToken: Rx.Observable<any>;
 
         //  Public Functions
 
@@ -61,56 +63,77 @@ module Google.Services {
             this.$location.path( "/login" );
         }
 
-        authenticate(scope:string, immediate:boolean = false):Rx.Observable<GoogleApiOAuth2TokenObject> {
-            console.log( `authenticate scopes: ${scope}` );
+        authenticate():Rx.Observable<GoogleApiOAuth2TokenObject> {
+            console.log( `authenticate scopes: ${this.authorizationScopes}` );
 
             return this.loadClientDetails()
                 .flatMap<GoogleApiOAuth2TokenObject>(clientDetails => {
-                    return this.askForAuthentication(clientDetails, scope)
+                    return this.askForAuthentication(clientDetails, this.authorizationScopes)
                 })
-                .map( token => {
-                    return {
-                        access_token: token.access_token,
-                        error: token.error,
-                        expires_in: token.expires_in,
-                        state: token.state
-                    };
-                } )
                 .safeApply(
                     this.$rootScope,
                     token => {
                         console.log(`token received: ${token.access_token}`);
                         this.$location.path( "/comments" );
                         this.token = token;
-                        this.$cookies.put( GoogleAuthenticationService.cookie_Key, JSON.stringify(token) );
                     },
                     error => {
                         console.log(`Error authorizing access: ${error}`)
                     });
         }
 
-        request<T>(args:{ path: string, params?: any }):Rx.Observable<T> {
-            console.log( `make request for: ${args.path}` );
+		request<T>(args:{ path: string, params?: any }):Rx.Observable<T> {
+		    console.log( `make request for: ${args.path}` );
 
-            if( !this.token ) {
-                console.log( "no token, returning to login screen")
-                this.$location.path( "/login" );
-                return Rx.Observable.throw<T>( "no token specified" );
-            }
+		    if( !this.token ) {
+		        console.log( "no token, returning to login screen")
+		        this.$location.path( "/login" );
+		        return Rx.Observable.throw<T>( "no token specified" );
+		    }
 
-            const request:HttpRequest<T> = gapi.client.request(args);
+		    return this.loadClientDetails()
+		        .flatMap<T>( clientDetails => {
+					console.log( `creating request for: ${args.path}` );
+		            const request:HttpRequest<T> = gapi.client.request(args);
+		            return Rx.Observable.fromPromise<IHasResult<T>>( <any>request)
+		                .map( result => { return result.result } );
+		            }
+		        )
+				.retryWhen( errors => {
 
-            return this.loadClientDetails()
-                .flatMap<T>( _ => {
-                    return Rx.Observable.fromPromise<IHasResult<T>>( <any>request)
-                        .map( result => { return result.result } );
-                    }
-                )
-                .do(
-                  _ => {console.log(`result returned for path: ${args.path}`)},
-                  error => { console.log( `error returned for path: ${args.path} Error: ${error}` ) }
-                );
-        }
+					return errors.flatMap( currentError => {
+
+						console.log( `Error status: ${currentError.result.error.code}` );
+
+						if(currentError.result.error.code == 401) {
+					 		console.log( `not authorized, attempting auth for ${args.path}` );
+							if( !this.refreshToken ) {
+								console.log( `creating refresh token for ${args.path}` );
+								this.refreshToken = this.askForAuthentication( this.clientDetails,this.authorizationScopes, true)
+									.do( _ => {
+										console.log( `refresh token complete ${args.path}` );
+										this.refreshToken = null;
+									} ).shareReplay(1);
+							} else {
+								console.log( `returning existing refresh token for ${args.path}` );
+							}
+
+							return this.refreshToken;
+						}
+
+						return Rx.Observable.throw( currentError );
+					} )
+					.do(
+						_ => {console.log(`flatmap onNext for ${args.path}`)},
+						_ => {console.log(`flatmap error for ${args.path}`)},
+						() => {console.log(`flatmap complete for ${args.path}`)}
+				);
+				} )
+		        .do(
+		          _ => {console.log(`result returned for path: ${args.path}`)},
+		          error => { console.log( `error returned for path: ${args.path} Error: ${error}` ) }
+		        );
+		}
 
         //  Private Functions
 
@@ -130,17 +153,30 @@ module Google.Services {
             return args.path + urlParams;
         }
 
-        private askForAuthentication(clientDetails:IClientDetails, scope:string):Rx.Observable<GoogleApiOAuth2TokenObject> {
+        private askForAuthentication(clientDetails:IClientDetails, scope:string, immediate: boolean = false):Rx.Observable<GoogleApiOAuth2TokenObject> {
             console.log( `Asking for authentication: ${clientDetails.client_id}` );
 
             return Rx.Observable.fromCallback(gapi.auth.authorize)(
-                {client_id: clientDetails.client_id, scope: scope, immediate: false, authuser: -1}
-            );
+                {client_id: clientDetails.client_id, scope: scope, immediate: immediate, authuser: immediate ? 1 : -1}
+            )
+			.map( token => {
+				const newToken: GoogleApiOAuth2TokenObject = {
+					access_token: token.access_token,
+					error: token.error,
+					expires_in: token.expires_in,
+					state: token.state
+				};
+				this.$cookies.put( GoogleAuthenticationService.cookie_Key, JSON.stringify(newToken) );
+				return newToken;
+			} ).do( authorization => {
+				console.log( "authorisation granted" )
+			} );
         }
 
         private loadClientDetails():Rx.Observable<IClientDetails> {
 
             if( this.clientDetails ) {
+				console.log(`returning saved client details`);
                 return Rx.Observable.return<IClientDetails>(this.clientDetails);
             }
 

@@ -18,9 +18,11 @@
 
 		<div class="thread-list-pane">
 		    <ng-include
-				ng-repeat="threadController in controller.threads"
+				ng-repeat="threadController in controller.threads | limitTo:controller.displayLimit"
 				src="'templates/thread.html'"
 				></ng-include>
 		</div>
     </div>
+
+	<button ng-click="controller.displayMore()">Display More</button>
 </div>

@@ -2,7 +2,7 @@
 <div class="thread">
 	<img
 		class="thread-img"
-		src="{{threadController.authorProfileImageUrl}}"
+		src="{{::threadController.authorProfileImageUrl}}"
 		height="75"
 		/>
 
@@ -11,12 +11,12 @@
 		<div class="thread-header">
 			<a
 				class="thread-username"
-				href="{{threadController.authorChannelUrl}}"
+				href="{{::threadController.authorChannelUrl}}"
 				target="_blank"
-				>{{threadController.authorDisplayName}}</a>
+				>{{::threadController.authorDisplayName}}</a>
 
 			<div class="thread-date">
-				{{threadController.publishedAt | date:'medium'}}
+				{{::threadController.publishedAt | date:'medium'}}
 			</div>
 
 		</div>
@@ -27,10 +27,10 @@
 	</div>
 	<a
 		class="thread-img"
-		href="{{threadController.videoUrl}}"
+		href="{{::threadController.videoUrl}}"
 		target="_blank">
 		<img
-			src="{{threadController.videoImageUrl}}"
+			src="{{::threadController.videoImageUrl}}"
 			height="75"
 			/>
 	</a>
