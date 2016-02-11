@@ -7,19 +7,22 @@
 		height="75"
 		/>
 
-	<div class="thread-content">
+	<div class="reply-content">
 
-		<a
-			class="reply-username"
-			href="{{reply.snippet.authorChannelUrl}}"
-			target="_blank"
-			>{{reply.snippet.authorDisplayName}}</a>
+		<div class="reply-header">
+			<a
+				class="reply-username"
+				href="{{reply.snippet.authorChannelUrl}}"
+				target="_blank"
+				>{{reply.snippet.authorDisplayName}}</a>
 
-		<div class="reply-date">
-			{{reply.snippet.publishedAt | date:'medium'}}
+			<div class="reply-date">
+				{{reply.snippet.publishedAt | date:'medium'}}
+			</div>
+
 		</div>
 
-		<div class="reply-content">
+		<div class="reply-text">
 			{{reply.snippet.textDisplay}}
 		</div>
 	</div>

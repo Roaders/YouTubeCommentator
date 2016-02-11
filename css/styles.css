@@ -3,8 +3,9 @@ html, body
 {
     height: 100%;
     min-height: 100%;
-    margin: 0;
     padding: 0;
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
 button.google {
@@ -86,23 +87,13 @@ button.google:active {
 }
 
 .thread-list-pane{
-	width: 500px;
+	min-width: 400px;
 }
 
-.thread{
+.thread, .reply{
 	margin: 5px;
 	border: solid black 1px;
     display: flex;
-}
-
-.thread-img {
-	display: inline-block;
-}
-
-.thread-content {
-	display: inline-block;
-	width: 100%;
-	padding: 5px;
 }
 
 .reply{
@@ -110,9 +101,35 @@ button.google:active {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	margin-left: 80px;
-	border: solid black 1px;
-    display: flex;
 }
+
+.thread-img, .reply-img {
+	display: inline-block;
+}
+
+.thread-content, .reply-content {
+	width: 100%;
+	padding: 5px;
+}
+
+.horizontal-spacer {
+	width: 100%;
+}
+
+.thread-header, .reply-header {
+	display: flex;
+	justify-content: space-between;
+}
+
+.reply-header {
+	padding-right: 133px;
+}
+
+.thread-username, .reply-username {}
+
+.thread-date, .reply-date {}
+
+.thread-text, .reply-text {}
 
 .glyphicon-animate {
     -animation: spin .7s infinite linear;

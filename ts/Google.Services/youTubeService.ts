@@ -169,8 +169,6 @@ module Google.Services {
 			} )
 			.retry(3)
 			.flatMap( commentList => {
-				console.log( `Replies loaded: (${commentList.nextPageToken})`);
-
 				const comments = Rx.Observable.from<IComment>(commentList.items)
 
 				if( commentList.nextPageToken ) {

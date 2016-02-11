@@ -8,19 +8,21 @@
 
 	<div class="thread-content">
 
-		<a
-			href="{{thread.snippet.topLevelComment.snippet.authorChannelUrl}}"
-			target="_blank"
-			>{{thread.snippet.topLevelComment.snippet.authorDisplayName}}</a>
+		<div class="thread-header">
+			<a
+				class="thread-username"
+				href="{{thread.snippet.topLevelComment.snippet.authorChannelUrl}}"
+				target="_blank"
+				>{{thread.snippet.topLevelComment.snippet.authorDisplayName}}</a>
 
-		<div>
-			{{thread.snippet.topLevelComment.snippet.publishedAt | date:'medium'}}
+			<div class="thread-date">
+				{{thread.snippet.topLevelComment.snippet.publishedAt | date:'medium'}}
+			</div>
+
 		</div>
 
-		<div ng-if="thread.snippet.totalReplyCount > 0">replies: {{thread.replies.comments.length}} out of {{thread.snippet.totalReplyCount}}</div>
-
 		<!-- TODO: Display html -->
-		<div>{{thread.snippet.topLevelComment.snippet.textDisplay}}</div>
+		<div class="thread-text">{{thread.snippet.topLevelComment.snippet.textDisplay}}</div>
 
 	</div>
 
