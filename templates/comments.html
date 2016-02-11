@@ -6,9 +6,9 @@
     <div class="comments-pane">
         <h1>Comments</h1>
 
-        <div ng-if="controller.loadingComments" class="vertical-align">
+        <div ng-if="controller.loadingCount" class="vertical-align">
             <span>Loading...</span>
-			<span ng-if="controller.threads.length > 0">({{controller.threads.length}} loaded)</span>
+			<span ng-if="controller.loadingCount !== ''">({{controller.loadingCount}} loaded)</span>
             <span class="glyphicon glyphicon-refresh glyphicon-animate" aria-hidden="true"></span>
         </div>
 
@@ -18,10 +18,8 @@
 
 		<div class="thread-list-pane">
 		    <ng-include
-				ng-repeat="thread in controller.threads | orderBy:'thread.snippet.topLevelComment.snippet.publishedAt'"
+				ng-repeat="threadController in controller.threads"
 				src="'templates/thread.html'"
-				ng-controller="threadController as threadController"
-				ng-init="threadController.init( thread )"
 				></ng-include>
 		</div>
     </div>

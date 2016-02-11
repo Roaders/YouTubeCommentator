@@ -14,39 +14,64 @@ module Pricklythistle.Controller {
 
 		constructor(
 			private youTubeService: YouTubeService,
-			private $rootScope: ng.IScope
+			private $rootScope: ng.IScope,
+			private $filter: ng.IFilterService
 		) {
 			this.loadCommentThreads();
 		}
 
+		// Private Variables
+
+		private allThreads: ThreadController[];
+
 		//  Properties
 
-		loadingComments: boolean;
-		threads: ICommentThread[];
+		loadingCount: string;
 		message: string;
+
+		private _threads: ThreadController[];
+
+		get threads(): ThreadController[] {
+			return this._threads;
+		}
 
 		//  Private Functions
 
 		private loadCommentThreads(): void {
 
 			console.time( "loading all comment threads" );
-			this.threads = [];
-			this.loadingComments = true;
+			this.allThreads = [];
+			this.loadingCount = "";
 
 			this.youTubeService.getCommentThreadsForChannel()
-				.take(30)
+				.take(500)
+				.bufferWithTime(100)
 				.safeApply(
 					this.$rootScope,
-					thread => {
-						this.threads.push( thread );
+					threadList => {
+						threadList.forEach( thread => {
+							this.allThreads.push( new ThreadController( thread, this.$filter ) )
+						});
+
+						this.loadingCount = this.allThreads.length > 0 ? this.allThreads.length.toString() : "";
+
+						this.allThreads = this.$filter( 'orderBy' )(this.allThreads, 'latestReply', true);
+						this._threads = this.allThreads.slice(0, 100);
 					},
 					error => {
-						this.loadingComments = false;
-						this.message = `Error loading threads. Status: ${error.result.error.code} (${error.result.error.message})`
+						this.loadingCount = undefined;
+
+						if( error.result ) {
+							this.message = `Error loading threads. Status: ${error.result.error.code} (${error.result.error.message})`
+						} else if(error.message) {
+							this.message = `Error loading threads. (${error.message})`
+						} else {
+							this.message = `Error loading threads.`
+						}
 					},
 					() => {
 						console.timeEnd( "loading all comment threads" );
-						this.loadingComments = false;
+							this.loadingCount = undefined;
 					}
 				)
 				.subscribe();

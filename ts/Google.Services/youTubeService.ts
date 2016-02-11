@@ -120,14 +120,18 @@ module Google.Services {
 
 					return Rx.Observable.combineLatest<IComment[],IComment,ICommentThread>(
 						replyStream.toArray(), commentStream, (replies, topComment) => {
-								this.parseComment( topComment );
 
 								replies.forEach( reply => {
 									this.parseComment( reply );
 								} );
 
 								thread.replies = {comments: replies}
-								thread.snippet.topLevelComment = topComment;
+								if( topComment ){
+									this.parseComment( topComment );
+									thread.snippet.topLevelComment = topComment;
+								} else {
+									this.parseComment( thread.snippet.topLevelComment );
+								}
 								return thread;
 							}
 						);
@@ -137,8 +141,19 @@ module Google.Services {
 		// Private Functions
 
 		private parseComment( comment: IComment ): void {
-			comment.snippet.publishedAt = new Date( Date.parse( <any>comment.snippet.publishedAt ) );
-			comment.snippet.updatedAt = new Date( Date.parse( <any>comment.snippet.updatedAt ) );
+			if(comment && comment.snippet && comment.snippet.publishedAt ) {
+				comment.snippet.publishedAt = new Date( Date.parse( <any>comment.snippet.publishedAt ) );
+			}
+			else {
+				console.log( "publishedAt not found");
+			}
+
+			if(comment && comment.snippet && comment.snippet.updatedAt ) {
+				comment.snippet.updatedAt = new Date( Date.parse( <any>comment.snippet.updatedAt ) );
+			}
+			else {
+				console.log( "updatedAt not found");
+			}
 		}
 
 		private loadTopComment( thread: ICommentThread ): Rx.Observable<IComment> {

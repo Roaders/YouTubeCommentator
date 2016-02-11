@@ -2,13 +2,16 @@
  * Created by Giles on 08/02/2016.
  */
 
+import ICommentThread = Google.Services.ICommentThread;
+import IComment = Google.Services.IComment;
+import ThreadController = Pricklythistle.Controller.ThreadController;
+import ReplyController = Pricklythistle.Controller.ReplyController;
+
 const app: ng.IModule = angular.module( "youTubeCommentator", [ "ngRoute", "ngCookies" ] );
 
 app.controller( "commentatorController", Pricklythistle.Controller.CommentatorController )
 	.controller( "loginController", Pricklythistle.Controller.LoginController )
-	.controller( "headerController", Pricklythistle.Controller.HeaderController )
-	.controller( "threadController", Pricklythistle.Controller.ThreadController )
-	.controller( "replyController", Pricklythistle.Controller.ReplyController );
+	.controller( "headerController", Pricklythistle.Controller.HeaderController );
 
 app.service( "googleAuthenticationService", Google.Services.GoogleAuthenticationService )
 	.service( "youTubeService", Google.Services.YouTubeService );

@@ -7,9 +7,21 @@ module Pricklythistle.Controller {
 
 	export class ThreadController extends ReplyController {
 
-		// Private Variables
+		// Constructor
 
-		private thread: ICommentThread;
+		constructor(
+			private thread: ICommentThread,
+			private $filter: ng.IFilterService
+			) {
+			super( thread.snippet.topLevelComment );
+
+			this._latestReply = this.findLatestReply();
+			this._replies = thread.replies.comments.map( reply => new ReplyController( reply ) );
+
+			this._replies = this.$filter( 'orderBy' )(this._replies, 'publishedAt');
+		}
+
+		// Private Variables
 
 		// Properties
 
@@ -27,13 +39,10 @@ module Pricklythistle.Controller {
 			return this._latestReply;
 		}
 
-		// Public Functions
+		private _replies: ReplyController[];
 
-		init( thread: IComment ) {
-			this.thread = <any>thread;
-			super.init( this.thread.snippet.topLevelComment );
-
-			this._latestReply = this.findLatestReply();
+		get replies(): ReplyController[] {
+			return this._replies;
 		}
 
 		// Private Functions

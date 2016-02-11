@@ -3,7 +3,7 @@
 
 	<img
 		class="thread-img"
-		src="{{reply.snippet.authorProfileImageUrl}}"
+		src="{{replyController.authorProfileImageUrl}}"
 		height="75"
 		/>
 
@@ -12,18 +12,18 @@
 		<div class="reply-header">
 			<a
 				class="reply-username"
-				href="{{reply.snippet.authorChannelUrl}}"
+				href="{{replyController.authorChannelUrl}}"
 				target="_blank"
-				>{{reply.snippet.authorDisplayName}}</a>
+				>{{replyController.authorDisplayName}}</a>
 
 			<div class="reply-date">
-				{{reply.snippet.publishedAt | date:'medium'}}
+				{{replyController.publishedAt | date:'medium'}}
 			</div>
 
 		</div>
 
 		<div class="reply-text">
-			{{reply.snippet.textDisplay}}
+			{{replyController.textDisplay}}
 		</div>
 	</div>
 

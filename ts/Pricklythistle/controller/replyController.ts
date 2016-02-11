@@ -6,6 +6,12 @@ module Pricklythistle.Controller {
 
 	export class ReplyController {
 
+		// Constructor
+
+		constructor( comment: IComment ) {
+			this.comment = comment;
+		}
+
 		// Private Variables
 
 		private comment: IComment;
@@ -30,12 +36,6 @@ module Pricklythistle.Controller {
 
 		get textDisplay(): string {
 			return this.comment ? this.comment.snippet.textDisplay : undefined;
-		}
-
-		// Public Functions
-
-		init( comment: IComment ) {
-			this.comment = comment;
 		}
 
 	}
