@@ -26,7 +26,7 @@ app.config( ( $routeProvider: angular.route.IRouteProvider ) => {
         .otherwise( { redirectTo: "/login" } );
 } );
 
-angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000)
+angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500);
 
 app.value( "authorizationScopes", scopes);
 

@@ -36,14 +36,14 @@ module Pricklythistle.Services {
 				.filter( controller => this.replyLoadNotStarted( controller.thread ) )
 				.flatMap<IComment[]>( controller => {
 
-					console.log( `Loading replies for ${controller.thread.id}` );
+					//console.log( `Loading replies for ${controller.thread.id}` );
 					controller.thread.replyLoadingStatus = LoadingStatus.loading;
 					return this.youTubeService.loadReplies( controller.thread )
 						.toArray();
 				} )
 				.map( replies => {
-					if( !replies[0].snippet ) {
-						console.log( "no snippet for reply, returning" );
+					if( !replies || replies.length === 0 || !replies[0].snippet ) {
+						console.log( "no snippets for reply, returning" );
 						return;
 					}
 

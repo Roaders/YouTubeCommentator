@@ -31,6 +31,7 @@ module Pricklythistle.Controller {
 
 		loadingCount: string;
 		message: string;
+		loadingDisplay: boolean
 
 		private _threads: ThreadController[];
 
@@ -90,6 +91,8 @@ module Pricklythistle.Controller {
 		private updateDisplayedThreads(): void {
 			console.log( `updating displayed threads: ${this._displayCount}` )
 
+			this.loadingDisplay = true;
+
 			const threadsToDisplay = this._allThreads.slice(0, this._displayCount );
 
 			this.commentService.updateThreads( threadsToDisplay )
@@ -97,6 +100,10 @@ module Pricklythistle.Controller {
 					loadedThreads => {
 						loadedThreads = this.$filter( 'orderBy' )(loadedThreads, 'latestReply', true);
 						this._threads = loadedThreads;
+					},
+					_ => {},
+					() => {
+						this.loadingDisplay = false;
 				})
 				.subscribe();
 		}

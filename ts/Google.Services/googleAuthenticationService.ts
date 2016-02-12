@@ -83,7 +83,7 @@ module Google.Services {
         }
 
 		request<T>(args:{ path: string, params?: any }):Rx.Observable<T> {
-		    console.log( `make request for: ${args.path}` );
+		    //console.log( `make request for: ${args.path}` );
 
 		    if( !this.token ) {
 		        console.log( "no token, returning to login screen")
@@ -129,7 +129,9 @@ module Google.Services {
 				);
 				} )
 		        .do(
-		          _ => {console.log(`result returned for path: ${args.path}`)},
+		          _ => {
+					  //console.log(`result returned for path: ${args.path}`)
+				  },
 		          error => { console.log( `error returned for path: ${args.path} Error: ${error}` ) }
 		        );
 		}
