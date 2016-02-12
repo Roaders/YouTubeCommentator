@@ -9,33 +9,41 @@ module Pricklythistle.Controller {
 		// Constructor
 
 		constructor( comment: IComment ) {
-			this.comment = comment;
+			this._comment = comment;
 		}
 
 		// Private Variables
 
-		private comment: IComment;
+		private _comment: IComment;
 
 		// Properties
 
+		get comment() : IComment {
+			return this._comment;
+		}
+
+		set comment(value: IComment) {
+			this._comment = value;
+		}
+
 		get authorProfileImageUrl(): string {
-			return this.comment ? this.comment.snippet.authorProfileImageUrl : undefined;
+			return this._comment ? this._comment.snippet.authorProfileImageUrl : undefined;
 		}
 
 		get authorDisplayName(): string {
-			return this.comment ? this.comment.snippet.authorDisplayName : undefined;
+			return this._comment ? this._comment.snippet.authorDisplayName : undefined;
 		}
 
 		get authorChannelUrl(): string {
-			return this.comment ? this.comment.snippet.authorChannelUrl : undefined;
+			return this._comment ? this._comment.snippet.authorChannelUrl : undefined;
 		}
 
 		get publishedAt(): Date {
-			return this.comment ? this.comment.snippet.publishedAt : undefined;
+			return this._comment ? this._comment.snippet.publishedAt : undefined;
 		}
 
 		get textDisplay(): string {
-			return this.comment ? this.comment.snippet.textDisplay : undefined;
+			return this._comment ? this._comment.snippet.textDisplay : undefined;
 		}
 
 	}

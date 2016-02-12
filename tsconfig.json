@@ -6,6 +6,7 @@
     "diagnostics": true
   },
   "files": [
+    "ts/app.ts",
     "ts/Google.Services/googleAuthenticationService.ts",
     "ts/Google.Services/youTubeService.ts",
     "ts/Pricklythistle/controller/commentatorController.ts",
@@ -18,6 +19,7 @@
     "node_modules/rx/ts/rx.all.d.ts"
   ],
   "filesGlob": [
+    "ts/app.ts",
     "ts/Google.Services/*.ts",
     "ts/Pricklythistle/controller/*.ts",
     "typings/browser.d.ts",

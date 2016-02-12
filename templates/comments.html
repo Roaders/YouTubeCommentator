@@ -22,7 +22,7 @@
 
 		<div class="thread-list-pane">
 		    <ng-include
-				ng-repeat="threadController in controller.threads | limitTo:controller.displayLimit"
+				ng-repeat="threadController in controller.threads"
 				src="'templates/thread.html'"
 				></ng-include>
 		</div>

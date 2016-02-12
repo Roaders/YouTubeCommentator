@@ -7,7 +7,10 @@ module Pricklythistle.Controller {
 	import YouTubeService = Google.Services.YouTubeService;
 	import IUserInfo = Google.Services.IUserInfo;
 	import ICommentThread = Google.Services.ICommentThread;
+	import IComment = Google.Services.IComment;
+	import LoadingStatus = Google.Services.LoadingStatus;
 
+	// TODO: dispose of observable when logout
 	export class CommentatorController {
 
 		//  Constructor
@@ -20,9 +23,14 @@ module Pricklythistle.Controller {
 			this.loadCommentThreads();
 		}
 
+		// Private Variables
+
+		private _allThreads: ThreadController[];
+		private _displayCount: number;
+		private
+
 		//  Properties
 
-		displayLimit: number;
 		loadingCount: string;
 		message: string;
 
@@ -35,7 +43,8 @@ module Pricklythistle.Controller {
 		// Public Functions
 
 		displayMore() : void {
-			this.displayLimit += 20;
+			this._displayCount += 20;
+			this.updateDisplayedThreads();
 		}
 
 		//  Private Functions
@@ -43,22 +52,23 @@ module Pricklythistle.Controller {
 		private loadCommentThreads(): void {
 
 			console.time( "loading all comment threads" );
-			this._threads = [];
+			this._allThreads = [];
 			this.loadingCount = "";
-			this.displayLimit = 20;
+			this._displayCount = 10;
 
 			this.youTubeService.getCommentThreadsForChannel()
+				.map( thread => {
+					this._allThreads.push( this.createThreadController( thread ) );
+					this.loadingCount = this._allThreads.length > 0 ? this._allThreads.length.toString() : "";
+				} )
 				.bufferWithTime(100)
 				.safeApply(
 					this.$rootScope,
 					threadList => {
-						threadList.forEach( thread => {
-							this._threads.push( new ThreadController( thread, this.$filter ) )
-						});
-
-						this.loadingCount = this._threads.length > 0 ? this._threads.length.toString() : "";
-
-						this._threads = this.$filter( 'orderBy' )(this._threads, 'latestReply', true);
+						if(threadList.length > 0){
+							this._allThreads = this.$filter( 'orderBy' )(this._allThreads, 'latestReply', true);
+							this.updateDisplayedThreads();
+						}
 					},
 					error => {
 						this.loadingCount = undefined;
@@ -77,6 +87,149 @@ module Pricklythistle.Controller {
 					}
 				)
 				.subscribe();
+		}
+
+		private updateDisplayedThreads(): void {
+			console.log( `updating displayed threads: ${this._displayCount}` )
+
+			const threadsToDisplay = this._allThreads.slice(0, this._displayCount );
+
+			const fullyLoadedThreads: ThreadController[] = threadsToDisplay
+				.filter(controller => this.threadFullyLoaded(controller.thread) );
+
+			this._threads = fullyLoadedThreads;
+
+			this.updateTopComments( threadsToDisplay );
+			this.updateReplies(threadsToDisplay);
+		}
+
+		private updateReplies( threads: ThreadController[] ): void {
+
+			Rx.Observable
+				.from<ThreadController>( threads )
+				.filter( controller => this.replyLoadNotStarted( controller.thread ) )
+				.flatMap<IComment[]>( controller => {
+
+					console.log( `Loading replies for ${controller.thread.id}` );
+					controller.thread.replyLoadingStatus = LoadingStatus.loading;
+					return this.youTubeService.loadReplies( controller.thread ).toArray();
+				} )
+				.toArray()
+				.safeApply( this.$rootScope,
+				 	threadReplyList => {
+						console.log(`relies loaded for ${threadReplyList.length} threads`);
+						threadReplyList.forEach(replies => {
+							if( !replies[0].snippet ) {
+								console.log( "no snippet for reply, returning" );
+								return;
+							}
+
+						    var filteredThreads: ThreadController[] = threads
+								.filter( controller => controller.thread.id == replies[0].snippet.parentId );
+
+							if( filteredThreads.length != 1 ){
+								throw Error( "could not find thread to update" );
+							}
+							const thread: ICommentThread = filteredThreads[0].thread;
+
+							thread.replies.comments = replies;
+							thread.replyLoadingStatus = LoadingStatus.loaded;
+							filteredThreads[0].thread = thread;
+
+							if(thread.fullSnippetLoadingStatus === LoadingStatus.loaded) {
+								this._threads.push(filteredThreads[0]);
+							}
+						});
+
+						this._threads = this.$filter( 'orderBy' )(this._threads, 'latestReply', true);
+					})
+				.subscribe();
+		}
+
+		private updateTopComments( threads: ThreadController[] ): void {
+
+			Rx.Observable
+				.from<ThreadController>( threads )
+				.filter( controller => this.topCommentLoadNotStarted( controller.thread ) )
+				.bufferWithCount(100)
+				.flatMap<IComment[]>( threadControllers => {
+
+					const ids: string[] = threadControllers.map( controller => {
+						controller.thread.fullSnippetLoadingStatus = LoadingStatus.loading;
+						return controller.thread.id
+					});
+
+					console.log( `Loading ${ids.length} top comments` );
+
+					if(ids.length === 0) {
+						return Rx.Observable.empty();
+					}
+
+					return this.youTubeService.loadTopComments( ids );
+				} )
+				.safeApply( this.$rootScope,
+				 	commentList => {
+						console.log(`top comment list loaded: ${commentList.length}`);
+						commentList.forEach(comment => {
+						    var filteredThreads: ThreadController[] = threads
+								.filter( controller => controller.thread.id == comment.id );
+
+							if( filteredThreads.length != 1 ){
+								throw Error( "could not find thread to update" );
+							}
+							const thread: ICommentThread = filteredThreads[0].thread;
+
+							thread.snippet.topLevelComment = comment;
+							thread.fullSnippetLoadingStatus = LoadingStatus.loaded;
+							filteredThreads[0].thread = thread;
+
+							if(thread.replyLoadingStatus === LoadingStatus.loaded) {
+								this._threads.push(filteredThreads[0]);
+							}
+						});
+
+						this._threads = this.$filter( 'orderBy' )(this._threads, 'latestReply', true);
+					})
+				.subscribe();
+
+		}
+
+		private createThreadController( thread: ICommentThread ): ThreadController {
+
+			if( !thread.snippet || !thread.snippet.topLevelComment || !thread.snippet.topLevelComment.snippet.publishedAt ) {
+				console.log( "published at missing");
+			} else {
+				if( !(thread.snippet.topLevelComment.snippet.publishedAt instanceof Date) ){
+					console.log( "published at not date");
+				}
+			}
+
+			if( thread.replies ){
+				thread.replies.comments.forEach(reply => {
+				    if( !reply.snippet || !reply.snippet.publishedAt ) {
+						console.log( "publishet at missing");
+					} else if( !(reply.snippet.publishedAt instanceof Date) ) {
+						console.log( "published at not date" );
+					}
+				});
+			}
+
+			return new ThreadController( thread, this.$filter );
+		}
+
+		private replyLoadNotStarted( thread: ICommentThread ): boolean {
+			return thread.replyLoadingStatus !== LoadingStatus.loaded &&
+				thread.replyLoadingStatus !== LoadingStatus.loading
+		}
+
+		private topCommentLoadNotStarted( thread: ICommentThread ): boolean {
+			return thread.fullSnippetLoadingStatus !== LoadingStatus.loaded &&
+				thread.fullSnippetLoadingStatus !== LoadingStatus.loading
+		}
+
+		private threadFullyLoaded( thread: ICommentThread ): boolean {
+			return thread.replyLoadingStatus === LoadingStatus.loaded &&
+				thread.fullSnippetLoadingStatus === LoadingStatus.loaded;
 		}
 	}
 }
