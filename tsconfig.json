@@ -14,6 +14,7 @@
     "ts/Pricklythistle/controller/loginController.ts",
     "ts/Pricklythistle/controller/replyController.ts",
     "ts/Pricklythistle/controller/threadController.ts",
+    "ts/Pricklythistle/services/commentsService.ts",
     "typings/browser.d.ts",
     "node_modules/rx-angular/ts/rx.angular.d.ts",
     "node_modules/rx/ts/rx.all.d.ts"
@@ -22,6 +23,7 @@
     "ts/app.ts",
     "ts/Google.Services/*.ts",
     "ts/Pricklythistle/controller/*.ts",
+    "ts/Pricklythistle/services/*.ts",
     "typings/browser.d.ts",
     "node_modules/rx-angular/ts/rx.angular.d.ts",
     "node_modules/rx/ts/rx.all.d.ts"

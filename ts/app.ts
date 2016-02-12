@@ -16,7 +16,8 @@ app.controller( "commentatorController", Pricklythistle.Controller.CommentatorCo
 	.controller( "headerController", Pricklythistle.Controller.HeaderController );
 
 app.service( "googleAuthenticationService", Google.Services.GoogleAuthenticationService )
-	.service( "youTubeService", Google.Services.YouTubeService );
+	.service( "youTubeService", Google.Services.YouTubeService )
+	.service( "commentService", Pricklythistle.Services.CommentService );
 
 app.config( ( $routeProvider: angular.route.IRouteProvider ) => {
     $routeProvider
