@@ -4,8 +4,8 @@ html, body
     height: 100%;
     min-height: 100%;
     padding: 0;
-	margin-left: 20px;
-	margin-right: 20px;
+	margin-left: 10px;
+	margin-right: 10px;
 }
 
 button.google {
@@ -46,9 +46,10 @@ button.google:active {
 .site-content {
     display: inline-block;
     height: 100%;
-    min-width: 800px;
     border-left: solid 1px lightgrey;
     border-right: solid 1px lightgrey;
+	width: 100%;
+	max-width: 800px;
 }
 
 .site-container {
@@ -95,13 +96,11 @@ button.google:active {
 }
 
 .thread-list-pane{
-	min-width: 400px;
 }
 
 .thread, .reply{
 	margin: 5px;
 	border: solid black 1px;
-    display: flex;
 }
 
 .reply{
@@ -111,33 +110,85 @@ button.google:active {
 	margin-left: 85px;
 }
 
-.thread-img, .reply-img {
-	display: inline-block;
-}
-
-.thread-content, .reply-content {
-	width: 100%;
-	padding: 5px;
-}
-
-.horizontal-spacer {
-	width: 100%;
-}
-
-.thread-header, .reply-header {
+.comment-row{
 	display: flex;
 	justify-content: space-between;
 }
 
-.reply-header {
-	padding-right: 133px;
+.comment-header{
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	padding-left: 5px;
+	padding-top: 0px;
+	padding-right: 5px;
+	padding-bottom: 0px;
 }
 
-.thread-username, .reply-username {}
+.user-img {
+}
 
-.thread-date, .reply-date {}
+.video-img {
+}
 
-.thread-text, .reply-text {}
+.comment-username {
+}
+
+.comment-date {
+}
+
+.comment-middle{
+	width: 100%
+}
+
+.comment-text-middle {
+	width: 100%;
+	padding: 5px;
+}
+
+.comment-text-bottom {
+	display: none;
+	width: 100%;
+	padding-left: 5px;
+	padding-top: 0px;
+	padding-right: 5px;
+	padding-bottom: 0px;
+}
+
+/* Mobile */
+@media screen and (max-width: 600px){
+	html, body
+	{
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.site-content {
+		width: 100%;
+		min-width: 0;
+	}
+
+	.comments-pane {
+		width: 100%;
+	  	padding: 5px;
+	}
+
+	.reply{
+		margin-left: 40px;
+	}
+
+	.comment-header{
+		display: block;
+	}
+
+	.comment-text-middle {
+		display: none;
+	}
+
+	.comment-text-bottom {
+		display: block;
+	}
+}
 
 .glyphicon-animate {
     -animation: spin .7s infinite linear;

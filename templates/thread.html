@@ -1,39 +1,43 @@
 
 <div class="thread">
-	<img
-		class="thread-img"
-		src="{{::threadController.authorProfileImageUrl}}"
-		height="75"
-		/>
+	<div class="comment-row">
+		<img
+			class="user-img"
+			src="{{::threadController.authorProfileImageUrl}}"
+			height="50"
+			width="50"
+			/>
+			<div class="comment-middle">
+				<div class="comment-header">
+					<a
+						class="comment-username"
+						href="{{::threadController.authorChannelUrl}}"
+						target="_blank"
+						>{{::threadController.authorDisplayName}}</a>
 
-	<div class="thread-content">
-
-		<div class="thread-header">
-			<a
-				class="thread-username"
-				href="{{::threadController.authorChannelUrl}}"
-				target="_blank"
-				>{{::threadController.authorDisplayName}}</a>
-
-			<div class="thread-date">
-				{{::threadController.publishedAt | date:'medium'}}
+					<div class="comment-date">
+						{{::threadController.publishedAt | date:'medium'}}
+					</div>
+				</div>
+				<div
+					class="comment-text-middle"
+					ng-bind-html="threadController.textDisplay"
+					></div>
 			</div>
 
-		</div>
-
-		<!-- TODO: Only show a few lines and expand -->
-		<div class="thread-text" ng-bind-html="threadController.textDisplay"></div>
-
+			<a
+				class="video-img"
+				href="{{::threadController.videoUrl}}"
+				target="_blank">
+				<img
+					src="{{::threadController.videoImageUrl}}"
+					height="50"
+					width="89"
+					/>
+			</a>
 	</div>
-	<a
-		class="thread-img"
-		href="{{::threadController.videoUrl}}"
-		target="_blank">
-		<img
-			src="{{::threadController.videoImageUrl}}"
-			height="75"
-			/>
-	</a>
+
+	<div class="comment-text-bottom" ng-bind-html="threadController.textDisplay"></div>
 </div>
 
 <ng-include ng-repeat="replyController in threadController.replies" src="'templates/reply.html'" ></ng-include>

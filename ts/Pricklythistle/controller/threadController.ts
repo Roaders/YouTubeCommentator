@@ -42,6 +42,7 @@ module Pricklythistle.Controller {
 			return this._thread ? "https://www.youtube.com/watch?v=" + this._thread.snippet.videoId + "&google_comment_id=" + this._thread.id : undefined;
 		}
 
+		// TODO: show how long ago
 		private _latestReply: Date;
 
 		get latestReply(): Date {

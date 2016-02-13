@@ -1,29 +1,30 @@
 
 <div class="reply">
+	<div class="comment-row">
+		<img
+			class="user-img"
+			src="{{::replyController.authorProfileImageUrl}}"
+			height="50"
+			width="50"
+			/>
+			<div class="comment-middle">
+				<div class="comment-header">
+					<a
+						class="comment-username"
+						href="{{::replyController.authorChannelUrl}}"
+						target="_blank"
+						>{{::replyController.authorDisplayName}}</a>
 
-	<img
-		class="thread-img"
-		src="{{::replyController.authorProfileImageUrl}}"
-		height="75"
-		/>
-
-	<div class="reply-content">
-
-		<div class="reply-header">
-			<a
-				class="reply-username"
-				href="{{::replyController.authorChannelUrl}}"
-				target="_blank"
-				>{{::replyController.authorDisplayName}}</a>
-
-			<div class="reply-date">
-				{{::replyController.publishedAt | date:'medium'}}
+					<div class="comment-date">
+						{{::replyController.publishedAt | date:'medium'}}
+					</div>
+				</div>
+				<div
+					class="comment-text-middle"
+					ng-bind-html="replyController.textDisplay"
+					></div>
 			</div>
-
-		</div>
-
-		<div class="reply-text" ng-bind-html="replyController.textDisplay"></div>
 	</div>
 
-
+	<div class="comment-text-bottom" ng-bind-html="replyController.textDisplay"></div>
 </div>
