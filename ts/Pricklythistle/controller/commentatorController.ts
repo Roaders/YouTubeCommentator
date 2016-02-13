@@ -57,7 +57,10 @@ module Pricklythistle.Controller {
 
 			this.commentService.getCommentThreadsForChannel()
 				.map( thread => {
+					var controller: ThreadController = this.createThreadController( thread );
 					this._allThreads.push( this.createThreadController( thread ) );
+
+					//console.log( `thread ${thread.id} published ${controller.publishedAt} last reply ${controller.latestReply}` );
 
 					this.loadingCount = this._allThreads.length > 0 ? this._allThreads.length.toString() : "";
 				} )

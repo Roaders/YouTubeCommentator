@@ -39,7 +39,7 @@ module Pricklythistle.Controller {
 		}
 
 		get videoUrl(): string {
-			return this._thread ? "https://www.youtube.com/watch?v=" + this._thread.snippet.videoId : undefined;
+			return this._thread ? "https://www.youtube.com/watch?v=" + this._thread.snippet.videoId + "&google_comment_id=" + this._thread.id : undefined;
 		}
 
 		private _latestReply: Date;

@@ -25,20 +25,12 @@ module Google.Services {
     export interface IComment {
         id: string;
         snippet: {
-            channelId: string;
-            videoId: string;
             parentId: string;
             publishedAt: Date;
-            updatedAt: Date;
             textDisplay?: string;
-            textOriginal?: string;
             authorDisplayName?: string;
             authorProfileImageUrl?: string;
             authorChannelUrl?: string;
-            authorGoogleplusProfileUrl?: string;
-            canRate?: boolean;
-            viewerRating?: string;
-            likeCount?: number;
         };
     }
 
@@ -55,12 +47,10 @@ module Google.Services {
     export interface ICommentThread {
         id: string;
         snippet: {
-          channelId: string;
           videoId: string;
           topLevelComment: IComment;
           canReply: boolean;
           totalReplyCount: number;
-          isPublic: boolean;
 	  	};
         replies?: { comments: IComment[] };
 		replyLoadingStatus?: LoadingStatus;
@@ -106,7 +96,7 @@ module Google.Services {
         }
 
         getCommentThreadsForChannel(lightweight: boolean = false): Rx.Observable<ICommentThread> {
-            console.log(`loading comment threads lightweight: ${lightweight}`);
+            //console.log(`loading comment threads lightweight: ${lightweight}`);
 
             return this.getChannelList()
                 .flatMap<IChannel>(  channelList => Rx.Observable.from(channelList)  )
@@ -184,10 +174,6 @@ module Google.Services {
 			if(comment && comment.snippet && comment.snippet.publishedAt ) {
 				comment.snippet.publishedAt = new Date( Date.parse( <any>comment.snippet.publishedAt ) );
 			}
-
-			if(comment && comment.snippet && comment.snippet.updatedAt ) {
-				comment.snippet.updatedAt = new Date( Date.parse( <any>comment.snippet.updatedAt ) );
-			}
 		}
 
 		private loadMissingRepliesForThread(thread: ICommentThread): Rx.Observable<ICommentThread> {
@@ -195,23 +181,25 @@ module Google.Services {
 			var existingReplies: number = thread.replies ? thread.replies.comments.length : 0;
 
 			if( thread.snippet.totalReplyCount > existingReplies ) {
-				console.log( "Loading missing replies" );
+				//console.log( `replies require load ${thread.id}` );
 				thread.replyLoadingStatus = LoadingStatus.loading;
 				return this.loadReplies(thread)
 					.toArray()
 					.map( replies => {
-						console.log( "missing reply loaded" );
+						console.log( `missing reply loaded` );
 						thread.replyLoadingStatus = LoadingStatus.loaded;
 						thread.replies = {comments: replies};
 						return thread;
 					} );
 			} else {
 				if( thread.replies ) {
+					//console.log( `thread replies already loaded ${thread.id}` );
 					thread.replyLoadingStatus = LoadingStatus.notStarted;
 					thread.replies.comments.forEach( reply => {
 						this.parseComment( reply );
 					} );
 				} else if(thread.snippet.totalReplyCount === 0) {
+					//console.log( `thread has no replies ${thread.id}` );
 					thread.replyLoadingStatus = LoadingStatus.loaded;
 				}
 				return Rx.Observable.return(thread);
@@ -225,12 +213,15 @@ module Google.Services {
 
 				var part: string = lightweight ? "id,snippet" : "id,snippet,replies";
 
+				const commentFields: string = `id,snippet(parentId,publishedAt,textDisplay,authorDisplayName,authorProfileImageUrl,authorChannelUrl)`;
+				const fields: string =`items(id,replies(comments(${commentFields})),snippet(videoId,totalReplyCount,canReply,topLevelComment(${commentFields}))),nextPageToken`;
+
 				return Rx.Observable.defer<ICommentThreadList>( () => {
 					return this.googleAuthenticationService.request<ICommentThreadList>( {
 						path: YouTubeService.commentThreads,
 						params: {
 						  part: part,
-						  fields: "items(id,replies,snippet),nextPageToken",
+						  fields: fields,
 						  allThreadsRelatedToChannelId: channel.id,
 						  pageToken: pageToken,
 						  maxResults: maxResults

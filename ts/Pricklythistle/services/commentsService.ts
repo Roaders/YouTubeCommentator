@@ -162,11 +162,9 @@ module Pricklythistle.Services {
 			return {
 				id: thread.id,
 				snippet: {
-					channelId: thread.snippet.channelId,
 					videoId: thread.snippet.videoId,
 					canReply: thread.snippet.canReply,
 					totalReplyCount: thread.snippet.totalReplyCount,
-					isPublic: thread.snippet.isPublic,
 					topLevelComment: topComment
 				},
 				replies: replies
@@ -177,11 +175,8 @@ module Pricklythistle.Services {
 			return {
 				id: comment.id,
 				snippet: {
-					channelId: comment.snippet.channelId,
-					videoId: comment.snippet.videoId,
 					parentId: comment.snippet.parentId,
-					publishedAt: comment.snippet.publishedAt,
-					updatedAt: comment.snippet.updatedAt
+					publishedAt: comment.snippet.publishedAt
 				}
 			};
 		}
