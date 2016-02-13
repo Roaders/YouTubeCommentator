@@ -40,4 +40,8 @@
 	<div class="comment-text-bottom" ng-bind-html="threadController.textDisplay"></div>
 </div>
 
+<div ng-if="threadController.buttonText" class="show-reply-container">
+	<button class="show-reply-button" ng-click="threadController.toggleReplyDisplay()">{{threadController.buttonText}}</button>
+</div>
+
 <ng-include ng-repeat="replyController in threadController.replies" src="'templates/reply.html'" ></ng-include>

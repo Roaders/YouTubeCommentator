@@ -21,7 +21,22 @@ module Pricklythistle.Controller {
 
 		// Private Variables
 
+		private _allReplies: ReplyController[];
+		private _allRepliesShown: boolean = false;
+
 		// Properties
+
+		get buttonText() : string {
+			if( this._allReplies && this._allReplies.length > 1 ){
+				if( this._allRepliesShown ){
+					return "Hide Replies"
+				} else {
+					return `Show ${this._allReplies.length - 1} additional replies`
+				}
+			} else {
+				return undefined;
+			}
+		}
 
 		get thread(): ICommentThread {
 			return this._thread;
@@ -42,7 +57,6 @@ module Pricklythistle.Controller {
 			return this._thread ? "https://www.youtube.com/watch?v=" + this._thread.snippet.videoId + "&google_comment_id=" + this._thread.id : undefined;
 		}
 
-		// TODO: show how long ago
 		private _latestReply: Date;
 
 		get latestReply(): Date {
@@ -55,12 +69,31 @@ module Pricklythistle.Controller {
 			return this._replies;
 		}
 
+		// Public Functions
+
+		toggleReplyDisplay(): void {
+			this._allRepliesShown = !this._allRepliesShown;
+
+			this.updateReplyDisplay();
+		}
+
 		// Private Functions
+
+		private updateReplyDisplay(): void {
+			if(this._allRepliesShown) {
+				this._replies = this._allReplies;
+			} else {
+				this._replies = this._allReplies ? [this._allReplies[ this._allReplies.length - 1 ]] : undefined;
+			}
+
+		}
 
 		private updateReplies() : void {
 			this._latestReply = this.findLatestReply();
-			this._replies = this._thread.replies ? this._thread.replies.comments.map( reply => new ReplyController( reply ) ) : undefined;
-			this._replies = this.$filter( 'orderBy' )(this._replies, 'publishedAt');
+			this._allReplies = this._thread.replies ? this._thread.replies.comments.map( reply => new ReplyController( reply ) ) : undefined;
+			this._allReplies = this.$filter( 'orderBy' )(this._allReplies, 'publishedAt');
+
+			this.updateReplyDisplay();
 		}
 
 		private findLatestReply(): Date {

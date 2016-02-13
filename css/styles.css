@@ -110,6 +110,17 @@ button.google:active {
 	margin-left: 85px;
 }
 
+.show-reply-container {
+	margin-right: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-left: 85px;
+}
+
+.show-reply-button {
+	width: 100%;
+}
+
 .comment-row{
 	display: flex;
 	justify-content: space-between;
@@ -174,6 +185,10 @@ button.google:active {
 	}
 
 	.reply{
+		margin-left: 40px;
+	}
+	
+	.show-reply-container {
 		margin-left: 40px;
 	}
 
