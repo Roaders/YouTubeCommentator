@@ -3,6 +3,7 @@
 module Pricklythistle.Controller {
 
 	import IComment = Google.Services.IComment;
+	import DateUtil = Util.DateUtil;
 
 	export class ReplyController {
 
@@ -40,6 +41,11 @@ module Pricklythistle.Controller {
 
 		get publishedAt(): Date {
 			return this._comment ? this._comment.snippet.publishedAt : undefined;
+		}
+
+		get publishedAtDisplay(): string {
+			const publishDate: Date = this._comment ? this._comment.snippet.publishedAt : undefined;
+			return DateUtil.formatHowLongAgo(publishDate);
 		}
 
 		get textDisplay(): string {

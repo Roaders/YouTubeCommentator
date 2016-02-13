@@ -15,8 +15,8 @@
 						target="_blank"
 						>{{::replyController.authorDisplayName}}</a>
 
-					<div class="comment-date">
-						{{::replyController.publishedAt | date:'medium'}}
+					<div class="comment-date" title="{{::replyController.publishedAt | date:'medium'}}">
+						{{::replyController.publishedAtDisplay}}
 					</div>
 				</div>
 				<div

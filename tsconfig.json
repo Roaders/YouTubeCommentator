@@ -15,6 +15,7 @@
     "ts/Pricklythistle/controller/replyController.ts",
     "ts/Pricklythistle/controller/threadController.ts",
     "ts/Pricklythistle/services/commentsService.ts",
+    "ts/Pricklythistle/util/dateUtil.ts",
     "typings/browser.d.ts",
     "node_modules/rx-angular/ts/rx.angular.d.ts",
     "node_modules/rx/ts/rx.all.d.ts"
@@ -24,6 +25,7 @@
     "ts/Google.Services/*.ts",
     "ts/Pricklythistle/controller/*.ts",
     "ts/Pricklythistle/services/*.ts",
+    "ts/Pricklythistle/util/*.ts",
     "typings/browser.d.ts",
     "node_modules/rx-angular/ts/rx.angular.d.ts",
     "node_modules/rx/ts/rx.all.d.ts"

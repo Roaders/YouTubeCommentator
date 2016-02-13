@@ -15,8 +15,8 @@
 						target="_blank"
 						>{{::threadController.authorDisplayName}}</a>
 
-					<div class="comment-date">
-						{{::threadController.publishedAt | date:'medium'}}
+					<div class="comment-date" title="{{::threadController.publishedAt | date:'medium'}}">
+						{{::threadController.publishedAtDisplay}}
 					</div>
 				</div>
 				<div
