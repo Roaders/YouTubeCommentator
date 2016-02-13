@@ -19,13 +19,13 @@ module Pricklythistle.Services {
 		) {
 		}
 
-		// Public FUnctions
+		// Public Fnctions
 
 		getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
 			return this.youTubeService.getCommentThreadsForChannel();
 		}
 
-		public updateThreads(threads: ThreadController[]): Rx.Observable<ThreadController[]> {
+		updateThreads(threads: ThreadController[]): Rx.Observable<ThreadController[]> {
 			console.log( `update ${threads.length} threads` );
 			const repliesStream: Rx.Observable<any> = this.updateReplies( threads );
 			const topCommentsStream: Rx.Observable<any> = this.updateTopComments( threads );
@@ -35,7 +35,16 @@ module Pricklythistle.Services {
 				.do( _ => console.log( `${threads.length} threads updated` ) );
 		}
 
-		updateReplies( threads: ThreadController[] ): Rx.Observable<number> {
+		postReply(replyText: string, threadController: ThreadController): Rx.Observable<IComment[]> {
+			return this.youTubeService.postReply( replyText, threadController.thread )
+				.safeApply( this.$rootScope,
+					replies => { threadController.thread = threadController.thread }
+				);
+		}
+
+		// Private Functions
+
+		private updateReplies( threads: ThreadController[] ): Rx.Observable<number> {
 
 			return Rx.Observable
 				.from<ThreadController>( threads )
@@ -76,7 +85,7 @@ module Pricklythistle.Services {
 				} );
 		}
 
-		public updateTopComments( threads: ThreadController[] ): Rx.Observable<IComment[]> {
+		private updateTopComments( threads: ThreadController[] ): Rx.Observable<IComment[]> {
 
 			return Rx.Observable
 				.from<ThreadController>( threads )
@@ -116,8 +125,6 @@ module Pricklythistle.Services {
 						return commentList;
 					});
 		}
-
-		// Private Functions
 
 		private replyLoadNotStarted( thread: ICommentThread ): boolean {
 			return thread.replyLoadingStatus !== LoadingStatus.loaded &&

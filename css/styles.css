@@ -103,7 +103,15 @@ button.google:active {
 	border: solid black 1px;
 }
 
-.reply{
+.thread-reply-button {
+	margin: 5px;
+}
+
+.thread:hover, .reply:hover{
+	background: ghostwhite;
+}
+
+.reply, .reply-reply-button{
 	margin-right: 5px;
 	margin-top: 5px;
 	margin-bottom: 5px;
@@ -117,8 +125,13 @@ button.google:active {
 	margin-left: 85px;
 }
 
-.show-reply-button {
+.whole-width-button {
 	width: 100%;
+}
+
+.whole-width-textarea {
+	width: 100%;
+	height: 100px;
 }
 
 .comment-row{
@@ -184,10 +197,10 @@ button.google:active {
 	  	padding: 5px;
 	}
 
-	.reply{
+	.reply, .reply-reply-button{
 		margin-left: 40px;
 	}
-	
+
 	.show-reply-container {
 		margin-left: 40px;
 	}

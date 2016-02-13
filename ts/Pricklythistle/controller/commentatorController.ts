@@ -25,7 +25,7 @@ module Pricklythistle.Controller {
 
 		private _allThreads: ThreadController[];
 		private _displayCount: number;
-		private
+		private _selectedComment: ReplyController;
 
 		//  Properties
 
@@ -41,12 +41,34 @@ module Pricklythistle.Controller {
 
 		// Public Functions
 
+		public selectComment( commentController: ReplyController ): void {
+			if( this._selectedComment && this._selectedComment !== commentController ) {
+				this._selectedComment.deSelect();
+			}
+
+			this._selectedComment = commentController;
+
+			this._selectedComment.toggleSelection();
+		}
+
 		displayMore() : void {
 			this._displayCount += 20;
 			this.updateDisplayedThreads();
 		}
 
+		postReply(threadController: ThreadController, replyController?: ReplyController) : void {
+			replyController = replyController || threadController;
+
+			this.commentService.postReply( replyController.replyText, threadController )
+				.subscribe( _ => this.updateAllReplies() );
+		}
+
 		//  Private Functions
+
+		private updateAllReplies(): void {
+			this._allThreads = this.$filter( 'orderBy' )(this._allThreads, 'latestReply', true);
+			this.updateDisplayedThreads();
+		}
 
 		private loadCommentThreads(): void {
 
@@ -69,8 +91,7 @@ module Pricklythistle.Controller {
 					this.$rootScope,
 					threadList => {
 						if(threadList.length > 0){
-							this._allThreads = this.$filter( 'orderBy' )(this._allThreads, 'latestReply', true);
-							this.updateDisplayedThreads();
+							this.updateAllReplies();
 						}
 					},
 					error => {

@@ -1,5 +1,5 @@
 
-<div class="reply">
+<div class="reply" ng-click="controller.selectComment(replyController)">
 	<div class="comment-row">
 		<img
 			class="user-img"
@@ -27,4 +27,13 @@
 	</div>
 
 	<div class="comment-text-bottom" ng-bind-html="replyController.textDisplay"></div>
+</div>
+
+<div ng-if="replyController.isSelected" class="reply-reply-button">
+	<textarea class="whole-width-textarea" ng-model="replyController.replyText"></textarea>
+	<button
+		ng-disabled="!replyController.replyEnabled"
+		class="whole-width-button"
+		ng-click="controller.postReply(threadController,replyController)"
+		>Reply</button>
 </div>

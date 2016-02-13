@@ -168,6 +168,29 @@ module Google.Services {
 			});
 		}
 
+		postReply(replyText: string, thread: ICommentThread): Rx.Observable<IComment[]> {
+
+			return Rx.Observable.defer<ICommentThreadList>( () => {
+				return this.googleAuthenticationService.request<ICommentThreadList>( {
+					path: YouTubeService.comments,
+					method: "post",
+					params: {
+						part: "id",
+						snippet: JSON.stringify(
+							{
+								textOriginal: replyText,
+								parentId: thread.id
+							}
+						)
+					}
+				})
+			} )
+			.retry(3)
+			.flatMap<IComment[]>( _ => {
+				return this.loadReplies( thread ).toArray();
+			});
+		}
+
 		// Private Functions
 
 		private parseComment( comment: IComment ): void {

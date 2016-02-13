@@ -82,7 +82,7 @@ module Google.Services {
                     });
         }
 
-		request<T>(args:{ path: string, params?: any }):Rx.Observable<T> {
+		request<T>(args:{ path: string, params?: any, method?: string }):Rx.Observable<T> {
 		    //console.log( `make request for: ${args.path}` );
 
 		    if( !this.token ) {

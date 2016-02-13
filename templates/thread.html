@@ -1,11 +1,10 @@
 
-<div class="thread">
+<div class="thread" ng-click="controller.selectComment(threadController)">
 	<div class="comment-row">
 		<img
 			class="user-img"
 			src="{{::threadController.authorProfileImageUrl}}"
-			height="50"
-			width="50"
+			height="75"
 			/>
 			<div class="comment-middle">
 				<div class="comment-header">
@@ -31,8 +30,7 @@
 				target="_blank">
 				<img
 					src="{{::threadController.videoImageUrl}}"
-					height="50"
-					width="89"
+					height="75"
 					/>
 			</a>
 	</div>
@@ -40,8 +38,17 @@
 	<div class="comment-text-bottom" ng-bind-html="threadController.textDisplay"></div>
 </div>
 
-<div ng-if="threadController.buttonText" class="show-reply-container">
-	<button class="show-reply-button" ng-click="threadController.toggleReplyDisplay()">{{threadController.buttonText}}</button>
+<div ng-if="threadController.isSelected" class="thread-reply-button">
+	<textarea class="whole-width-textarea" ng-model="threadController.replyText"></textarea>
+	<button
+		ng-disabled="!threadController.replyEnabled"
+		class="whole-width-button"
+		ng-click="controller.postReply(threadController)"
+		>Reply</button>
 </div>
 
 <ng-include ng-repeat="replyController in threadController.replies" src="'templates/reply.html'" ></ng-include>
+
+<div ng-if="threadController.buttonText" class="show-reply-container">
+	<button class="whole-width-button" ng-click="threadController.toggleReplyDisplay()">{{threadController.buttonText}}</button>
+</div>
