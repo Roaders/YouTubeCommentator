@@ -22,28 +22,7 @@ module Pricklythistle.Services {
 		// Public FUnctions
 
 		getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
-
-			var allThreads: ICommentThread[] = [];
-
-			return this.youTubeService.getCommentThreadsForChannel()
-				.do( thread => {
-					allThreads.push(thread);
-				} )
-				.doOnCompleted(() => {
-					this.addToLocalStorage( allThreads );
-				});
-
-			// threadStream
-			// 	.bufferWithCount(100)
-			// 	.scan( ( allItems, currentItem ) => {
-			// 		currentItem.forEach(thread => {
-			// 		    allItems.push(thread);
-			// 		});
-			//
-			// 		console.log( `Save items to local storage: ${allItems.length}` )
-			//
-			// 		return allItems;
-			// 	}, []  );
+			return this.youTubeService.getCommentThreadsForChannel();
 		}
 
 		public updateThreads(threads: ThreadController[]): Rx.Observable<ThreadController[]> {

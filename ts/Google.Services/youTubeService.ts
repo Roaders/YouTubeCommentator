@@ -82,7 +82,6 @@ module Google.Services {
         //  Constructor
 
         constructor( private googleAuthenticationService: GoogleAuthenticationService ) {
-
         }
 
         //  Functions
@@ -91,7 +90,6 @@ module Google.Services {
             console.log( "loading user info" );
 
             return this.googleAuthenticationService.request<IUserInfo>( { path: YouTubeService.userInfo } );
-
         }
 
         getChannelList(): Rx.Observable<IChannel[]> {
@@ -107,8 +105,6 @@ module Google.Services {
 				} );
         }
 
-		// TODO: Limit Concurrency
-		// TODO: Batch comment loads
         getCommentThreadsForChannel(lightweight: boolean = false): Rx.Observable<ICommentThread> {
             console.log(`loading comment threads lightweight: ${lightweight}`);
 
