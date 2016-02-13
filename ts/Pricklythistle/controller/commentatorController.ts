@@ -58,6 +58,7 @@ module Pricklythistle.Controller {
 			this.commentService.getCommentThreadsForChannel()
 				.map( thread => {
 					this._allThreads.push( this.createThreadController( thread ) );
+
 					this.loadingCount = this._allThreads.length > 0 ? this._allThreads.length.toString() : "";
 				} )
 				.bufferWithTime(100)
@@ -89,8 +90,6 @@ module Pricklythistle.Controller {
 		}
 
 		private updateDisplayedThreads(): void {
-			console.log( `updating displayed threads: ${this._displayCount}` )
-
 			this.loadingDisplay = true;
 
 			const threadsToDisplay = this._allThreads.slice(0, this._displayCount );

@@ -6,13 +6,13 @@
 
     <div class="comments-pane"
 		infinite-scroll="controller.displayMore()"
-		infinite-scroll-distance='2'
+		infinite-scroll-distance='3'
 		infinite-scroll-disabled="controller.loadingDisplay"
 		>
         <h1>Comments</h1>
 
         <div ng-if="controller.loadingCount" class="vertical-align">
-            <span>Checking for replies...{{controller.loadingDisplay}}</span>
+            <span>Checking for replies...</span>
 			<span ng-if="controller.loadingCount !== ''">({{controller.loadingCount}} loaded)</span>
             <span class="glyphicon glyphicon-refresh glyphicon-animate" aria-hidden="true"></span>
         </div>

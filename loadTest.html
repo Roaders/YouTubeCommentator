@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>youTube Commentator 0.0.2</title>
+
+	<!-- TODO: make it work on mobile -->
+
+    <link href="css/styles.css" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+        integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+        crossorigin="anonymous"
+        >
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+        integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
+        crossorigin="anonymous"
+        >
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+    <!-- Rx -->
+    <script src="node_modules/rx/dist/rx.all.min.js"></script>
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+    <script src="node_modules/rx-angular/dist/rx.angular.js"></script>
+    <script src="node_modules/angular-route/angular-route.js"></script>
+    <script src="node_modules/angular-cookies/angular-cookies.js"></script>
+    <script src="node_modules/angular-sanitize/angular-sanitize.js"></script>
+    <script src="lib/ng-infinite-scroll.js"></script>
+
+    <!-- App Files -->
+
+    <script src="ts/Google.Services/googleAuthenticationService.js"></script>
+    <script src="ts/Google.Services/youTubeService.js"></script>
+
+	<script src="ts/Pricklythistle/services/commentsService.js"></script>
+
+    <script src="ts/Pricklythistle/controller/loginController.js"></script>
+    <script src="ts/Pricklythistle/controller/headerController.js"></script>
+    <script src="ts/Pricklythistle/controller/commentatorController.js"></script>
+    <script src="ts/Pricklythistle/controller/replyController.js"></script>
+    <script src="ts/Pricklythistle/controller/threadController.js"></script>
+
+	<script>
+		var ThreadController = Pricklythistle.Controller.ThreadController;
+		var ReplyController = Pricklythistle.Controller.ReplyController;
+		var scopes = "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube.force-ssl";
+		var app = angular.module("youTubeCommentator", ["ngRoute", "ngCookies", "ngSanitize", "infinite-scroll"]);
+
+		app.controller("commentatorController", Pricklythistle.Controller.CommentatorController)
+		    .controller("loginController", Pricklythistle.Controller.LoginController)
+		    .controller("headerController", Pricklythistle.Controller.HeaderController);
+
+		app.service("googleAuthenticationService", Google.Services.GoogleAuthenticationService)
+		    .service("youTubeService", Google.Services.YouTubeService)
+		    .service("commentService", Pricklythistle.Services.CommentService);
+
+		angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500);
+		app.value("authorizationScopes", scopes);
+
+		app.run( function (youTubeService){
+			console.time( "loading all comment threads" );
+			youTubeService.getCommentThreadsForChannel( false ).subscribe(
+				_ => {},
+				_ => {},
+				() => {
+					console.timeEnd( "loading all comment threads" );
+				}
+			);
+		} )
+
+		function initiateApp() {
+		    angular.bootstrap(document, ["youTubeCommentator"]);
+		}
+	</script>
+
+    <!-- Google Auth Client -->
+    <script src="https://apis.google.com/js/client.js?onload=initiateApp"></script>
+
+</head>
+<body >
+<div ng-view class="site-container">
+
+    <span class="large-loading">Loading....</span>
+
+</div>
+
+</body>
+</html>

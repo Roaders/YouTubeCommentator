@@ -6,6 +6,10 @@ module Pricklythistle.Services {
 
 	export class CommentService {
 
+		// Statics
+
+		static threadStorageKey: string = "channelThreads";
+
 		// Constructor
 
 		constructor(
@@ -18,22 +22,46 @@ module Pricklythistle.Services {
 		// Public FUnctions
 
 		getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
-			return this.youTubeService.getCommentThreadsForChannel();
+
+			var allThreads: ICommentThread[] = [];
+
+			return this.youTubeService.getCommentThreadsForChannel()
+				.do( thread => {
+					allThreads.push(thread);
+				} )
+				.doOnCompleted(() => {
+					this.addToLocalStorage( allThreads );
+				});
+
+			// threadStream
+			// 	.bufferWithCount(100)
+			// 	.scan( ( allItems, currentItem ) => {
+			// 		currentItem.forEach(thread => {
+			// 		    allItems.push(thread);
+			// 		});
+			//
+			// 		console.log( `Save items to local storage: ${allItems.length}` )
+			//
+			// 		return allItems;
+			// 	}, []  );
 		}
 
 		public updateThreads(threads: ThreadController[]): Rx.Observable<ThreadController[]> {
+			console.log( `update ${threads.length} threads` );
 			const repliesStream: Rx.Observable<any> = this.updateReplies( threads );
 			const topCommentsStream: Rx.Observable<any> = this.updateTopComments( threads );
 
 			return Rx.Observable.forkJoin( repliesStream, topCommentsStream )
-				.flatMap( results => Rx.Observable.return(threads));
+				.flatMap( results => Rx.Observable.return(threads))
+				.do( _ => console.log( `${threads.length} threads updated` ) );
 		}
 
-		updateReplies( threads: ThreadController[] ): Rx.Observable<IComment[]> {
+		updateReplies( threads: ThreadController[] ): Rx.Observable<number> {
 
 			return Rx.Observable
 				.from<ThreadController>( threads )
 				.filter( controller => this.replyLoadNotStarted( controller.thread ) )
+				.do(  )
 				.flatMap<IComment[]>( controller => {
 
 					//console.log( `Loading replies for ${controller.thread.id}` );
@@ -60,7 +88,13 @@ module Pricklythistle.Services {
 					parentThreadList[0].thread = thread;
 
 					return replies;
-				});
+				})
+				.count()
+				.do( ( count ) => {
+					if(count > 0) {
+						console.log(`${count} reply threads loaded`);
+					}
+				} );
 		}
 
 		public updateTopComments( threads: ThreadController[] ): Rx.Observable<IComment[]> {
@@ -76,11 +110,11 @@ module Pricklythistle.Services {
 						return controller.thread.id
 					});
 
-					console.log( `Loading ${ids.length} top comments` );
-
 					if(ids.length === 0) {
 						return Rx.Observable.empty();
 					}
+
+					console.log( `Loading ${ids.length} top comments` );
 
 					return this.youTubeService.loadTopComments( ids );
 				} )
@@ -120,6 +154,59 @@ module Pricklythistle.Services {
 			return thread.replyLoadingStatus === LoadingStatus.loaded &&
 				thread.fullSnippetLoadingStatus === LoadingStatus.loaded;
 		}
+
+		private addToLocalStorage(threads : ICommentThread[]): void {
+			console.log( `addToLocalStorage: ${threads.length}` );
+
+			if(typeof(Storage) !== "undefined"){
+				const threadsToStore: ICommentThread[] =
+					threads.map( thread => this.createLightWeightThreadForStorage(thread) );
+
+				var json: string = JSON.stringify(threadsToStore);
+				localStorage.setItem( CommentService.threadStorageKey, json );
+			}
+		}
+
+		private createLightWeightThreadForStorage(thread: ICommentThread): ICommentThread {
+
+			const topComment: IComment = this.createLightWeightCommentForStorage(
+				thread.snippet.topLevelComment
+			);
+
+			var replies;
+			if( thread.replies && thread.replies.comments && thread.replies.comments.length > 0 ) {
+				replies = {};
+
+				replies.comments = thread.replies.comments.map( comment => this.createLightWeightCommentForStorage(comment) );
+			}
+
+			return {
+				id: thread.id,
+				snippet: {
+					channelId: thread.snippet.channelId,
+					videoId: thread.snippet.videoId,
+					canReply: thread.snippet.canReply,
+					totalReplyCount: thread.snippet.totalReplyCount,
+					isPublic: thread.snippet.isPublic,
+					topLevelComment: topComment
+				},
+				replies: replies
+			};
+		}
+
+		private createLightWeightCommentForStorage(comment: IComment) : IComment {
+			return {
+				id: comment.id,
+				snippet: {
+					channelId: comment.snippet.channelId,
+					videoId: comment.snippet.videoId,
+					parentId: comment.snippet.parentId,
+					publishedAt: comment.snippet.publishedAt,
+					updatedAt: comment.snippet.updatedAt
+				}
+			};
+		}
 	}
+
 
 }
