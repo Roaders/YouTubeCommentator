@@ -122,7 +122,6 @@ module Pricklythistle.Controller {
 		}
 
 		private updateDisplayedThreads(): void {
-			console.log("updateDisplayedThreads");
 			this.loadingDisplay = true;
 
 			var threadsToDisplay = this._allThreads.slice(0, this._displayCount );

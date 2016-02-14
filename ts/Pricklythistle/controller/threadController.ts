@@ -106,12 +106,9 @@ module Pricklythistle.Controller {
 		}
 
 		private updateReplies() : void {
-			console.log( `update replies` );
 			this._latestReply = this.findLatestReply();
 			this._allReplies = this._thread.replies ? this._thread.replies.comments.map( reply => new ReplyController( reply, this._rootScope ) ) : undefined;
 			this._allReplies = this.$filter( 'orderBy' )(this._allReplies, 'publishedAt');
-
-			console.log( `latest reply: ${this.latestReply}` );
 
 			this.updateReplyDisplay();
 		}

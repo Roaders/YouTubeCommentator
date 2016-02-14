@@ -55,7 +55,6 @@ module Pricklythistle.Services {
 			return this.youTubeService.postReply( replyText, threadController.thread )
 				.safeApply( this.$rootScope,
 					replies => {
-						console.log( "reply complete, update thread on controller" );
 						const thread = threadController.thread;
 						thread.replies = { comments: replies };
 						threadController.thread = thread;

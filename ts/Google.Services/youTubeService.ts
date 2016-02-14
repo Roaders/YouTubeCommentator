@@ -138,8 +138,6 @@ module Google.Services {
 
 		loadReplies( thread: ICommentThread, pageToken?: string ): Rx.Observable<IComment> {
 
-			console.log( "load replies" );
-
 			return Rx.Observable.defer<ICommentList>( () => {
 				return this.googleAuthenticationService.request<ICommentList>( {
 					path: YouTubeService.comments,
