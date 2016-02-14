@@ -8,6 +8,10 @@ html, body
 	margin-right: 10px;
 }
 
+.alert{
+	margin-bottom: 5px;
+}
+
 button.google {
     border: none;
     background: no-repeat url( "../assets/Google/btn_google_signin_dark_normal_web.png" ) 0 0;

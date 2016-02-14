@@ -11,18 +11,19 @@ module Pricklythistle.Controller {
 
 		constructor(
 			private _thread: ICommentThread,
-			private $filter: ng.IFilterService
+			private $filter: ng.IFilterService,
+			$rootScope: ng.IScope
 			) {
 
-			super( _thread.snippet.topLevelComment );
+			super( _thread.snippet.topLevelComment, $rootScope );
 
 			this.updateReplies();
 		}
 
 		// Private Variables
 
+
 		private _allReplies: ReplyController[];
-		private _allRepliesShown: boolean = false;
 
 		// Properties
 
@@ -69,10 +70,20 @@ module Pricklythistle.Controller {
 			return this._replies;
 		}
 
+		private _allRepliesShown: boolean = false;
+
+		get allRepliesShown(): boolean {
+			return this._allRepliesShown;
+		}
+
 		// Public Functions
 
 		toggleReplyDisplay(): void {
-			this._allRepliesShown = !this._allRepliesShown;
+			if ( this._allReplies && this._allReplies.length > 1 ){
+				this._allRepliesShown = !this._allRepliesShown;
+			} else {
+				this._allRepliesShown = false;
+			}
 
 			this.updateReplyDisplay();
 		}
@@ -84,14 +95,23 @@ module Pricklythistle.Controller {
 				this._replies = this._allReplies;
 			} else {
 				this._replies = this._allReplies ? [this._allReplies[ this._allReplies.length - 1 ]] : undefined;
+
+				if(this._allReplies) {
+					this._allReplies.forEach(replyController => {
+					    replyController.deSelect();
+					});
+				}
 			}
 
 		}
 
 		private updateReplies() : void {
+			console.log( `update replies` );
 			this._latestReply = this.findLatestReply();
-			this._allReplies = this._thread.replies ? this._thread.replies.comments.map( reply => new ReplyController( reply ) ) : undefined;
+			this._allReplies = this._thread.replies ? this._thread.replies.comments.map( reply => new ReplyController( reply, this._rootScope ) ) : undefined;
 			this._allReplies = this.$filter( 'orderBy' )(this._allReplies, 'publishedAt');
+
+			console.log( `latest reply: ${this.latestReply}` );
 
 			this.updateReplyDisplay();
 		}

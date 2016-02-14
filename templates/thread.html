@@ -38,16 +38,44 @@
 	<div class="comment-text-bottom" ng-bind-html="threadController.textDisplay"></div>
 </div>
 
+<!-- Post reply -->
+
 <div ng-if="threadController.isSelected" class="thread-reply-button">
-	<textarea class="whole-width-textarea" ng-model="threadController.replyText"></textarea>
+	<textarea
+		ng-disabled="threadController.waitingForReplyResponse"
+		class="whole-width-textarea"
+		ng-model="threadController.replyText"
+		></textarea>
+
+	<div ng-if="threadController.replyPostError" class="alert alert-danger" role="alert">
+		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+		<span class="sr-only">Error:</span>
+		<span ng-bind-html="threadController.replyPostError"></span>
+	</div>
+
+	<div ng-if="threadController.waitingForReplyResponse" class="vertical-align">
+		<span>Posting...</span>
+		<span class="glyphicon glyphicon-refresh glyphicon-animate" aria-hidden="true"></span>
+	</div>
+
 	<button
-		ng-disabled="!threadController.replyEnabled"
+		ng-disabled="!threadController.replyEnabled || threadController.waitingForReplyResponse"
 		class="whole-width-button"
 		ng-click="controller.postReply(threadController)"
 		>Reply</button>
 </div>
 
+<!-- Hide all replies -->
+
+<div ng-if="threadController.allRepliesShown" class="show-reply-container">
+	<button class="whole-width-button" ng-click="threadController.toggleReplyDisplay()">{{threadController.buttonText}}</button>
+</div>
+
+<!-- Reply List -->
+
 <ng-include ng-repeat="replyController in threadController.replies" src="'templates/reply.html'" ></ng-include>
+
+<!-- Toggle All replies -->
 
 <div ng-if="threadController.buttonText" class="show-reply-container">
 	<button class="whole-width-button" ng-click="threadController.toggleReplyDisplay()">{{threadController.buttonText}}</button>

@@ -22,7 +22,23 @@ module Pricklythistle.Services {
 		// Public Fnctions
 
 		getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
-			return this.youTubeService.getCommentThreadsForChannel();
+			var threadStream: Rx.Observable<ICommentThread> =
+				this.youTubeService.getCommentThreadsForChannel()
+				.shareReplay(1);
+
+			threadStream
+	            .bufferWithCount(100)
+	            .scan( ( allItems, currentItem ) => {
+	                currentItem.forEach(thread => {
+	                    allItems.push(thread);
+	                });
+
+	                console.log( `Save items to local storage: ${allItems.length}` )
+
+	                return allItems;
+	            }, []  );
+
+			return threadStream;
 		}
 
 		updateThreads(threads: ThreadController[]): Rx.Observable<ThreadController[]> {
@@ -38,7 +54,17 @@ module Pricklythistle.Services {
 		postReply(replyText: string, threadController: ThreadController): Rx.Observable<IComment[]> {
 			return this.youTubeService.postReply( replyText, threadController.thread )
 				.safeApply( this.$rootScope,
-					replies => { threadController.thread = threadController.thread }
+					replies => {
+						console.log( "reply complete, update thread on controller" );
+						const thread = threadController.thread;
+						thread.replies = { comments: replies };
+						threadController.thread = thread;
+
+						if( !threadController.allRepliesShown )
+						{
+							threadController.toggleReplyDisplay();
+						}
+					}
 				);
 		}
 

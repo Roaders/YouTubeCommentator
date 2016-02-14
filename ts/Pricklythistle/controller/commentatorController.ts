@@ -59,8 +59,16 @@ module Pricklythistle.Controller {
 		postReply(threadController: ThreadController, replyController?: ReplyController) : void {
 			replyController = replyController || threadController;
 
-			this.commentService.postReply( replyController.replyText, threadController )
-				.subscribe( _ => this.updateAllReplies() );
+			console.log( `post reply: ${replyController.replyText}` );
+
+			const responseStream = this.commentService.postReply(
+				replyController.replyText,
+				threadController ).safeApply( this.$rootScope, _ => {
+					console.log( "reply success, updating replies" );
+					this.updateAllReplies();
+			} );
+
+			replyController.waitForReplyResponse( responseStream );
 		}
 
 		//  Private Functions
@@ -114,25 +122,25 @@ module Pricklythistle.Controller {
 		}
 
 		private updateDisplayedThreads(): void {
+			console.log("updateDisplayedThreads");
 			this.loadingDisplay = true;
 
-			const threadsToDisplay = this._allThreads.slice(0, this._displayCount );
+			var threadsToDisplay = this._allThreads.slice(0, this._displayCount );
 
 			this.commentService.updateThreads( threadsToDisplay )
 				.safeApply( this.$rootScope,
-					loadedThreads => {
-						loadedThreads = this.$filter( 'orderBy' )(loadedThreads, 'latestReply', true);
-						this._threads = loadedThreads;
-					},
+					loadedThreads => {},
 					_ => {},
 					() => {
+						threadsToDisplay = this.$filter( 'orderBy' )(threadsToDisplay, 'latestReply', true);
+						this._threads = threadsToDisplay;
 						this.loadingDisplay = false;
 				})
 				.subscribe();
 		}
 
 		private createThreadController( thread: ICommentThread ): ThreadController {
-			return new ThreadController( thread, this.$filter );
+			return new ThreadController( thread, this.$filter, this.$rootScope );
 		}
 	}
 }

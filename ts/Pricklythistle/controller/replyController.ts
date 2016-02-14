@@ -9,18 +9,32 @@ module Pricklythistle.Controller {
 
 		// Constructor
 
-		constructor( comment: IComment ) {
+		constructor( comment: IComment, $rootScope: ng.IScope ) {
 			this._comment = comment;
+			this._rootScope = $rootScope;
 		}
 
 		// Private Variables
 
 		private _comment: IComment;
 		private _initialReplyText: string;
+		protected _rootScope: ng.IScope
 
 		// Properties
 
 		replyText: string;
+
+		private _replyPostError: string;
+
+		get replyPostError(): string {
+			return this._replyPostError;
+		}
+
+		private _waitingForReplyResponse: boolean;
+
+		get waitingForReplyResponse(): boolean {
+			return this._waitingForReplyResponse;
+		}
 
 		get replyEnabled(): boolean {
 			return this.replyText !== this._initialReplyText && this.replyText && this.replyText != ""
@@ -67,6 +81,33 @@ module Pricklythistle.Controller {
 
 		// Public Functions
 
+		waitForReplyResponse( responseStream: Rx.Observable<any> ): void {
+			this._waitingForReplyResponse = true;
+			this._replyPostError = null;
+
+			responseStream
+				.safeApply( this._rootScope,
+					_ => {
+						console.log( "reply posted, closing reply form" );
+						this._waitingForReplyResponse = false;
+						this.deSelect();
+					},
+					error => {
+						console.log( `reply post error: ${error}` );
+						this._replyPostError = "";
+
+						error.result.error.errors.forEach(currentError => {
+							if( this._replyPostError != "" ){
+								this._replyPostError += "<br />";
+							}
+						    this._replyPostError += currentError.message + "</p>";
+						});
+						this._waitingForReplyResponse = false;
+					}
+				)
+				.subscribe();
+		}
+
 		deSelect(): void {
 			this._isSelected = false;
 			this._initialReplyText = this.replyText = "";
@@ -77,8 +118,10 @@ module Pricklythistle.Controller {
 
 			if( this._isSelected ) {
 				this._initialReplyText = this.replyText = "+" + this.authorDisplayName + " ";
+				this._replyPostError = null;
 			} else {
 				this.deSelect();
+				this._replyPostError = null;
 			}
 		}
 

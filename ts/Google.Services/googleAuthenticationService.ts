@@ -42,6 +42,8 @@ module Google.Services {
                 this.token = JSON.parse( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) );
                 console.log( "setting api token from cookie: " + this.token.access_token );
                 gapi.auth.setToken(this.token);
+
+				$location.path( "/comments" );
             }
         }
 
@@ -82,7 +84,7 @@ module Google.Services {
                     });
         }
 
-		request<T>(args:{ path: string, params?: any, method?: string }):Rx.Observable<T> {
+		request<T>(args:{ path: string, params?: any, method?: string, body?: any }):Rx.Observable<T> {
 		    //console.log( `make request for: ${args.path}` );
 
 		    if( !this.token ) {
