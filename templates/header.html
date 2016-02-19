@@ -1,23 +1,24 @@
 
+<div class="mdl-layout--fixed-header">
 
-<div class="header verticalAlign" ng-controller="headerController as controller">
+	<header class="mdl-layout__header" ng-controller="headerController as controller">
 
-    <div class="header-user-image">
-        <img
-            src="{{controller.userInfo.picture}}"
-            width="50"
-            height="50"
-        />
-    </div>
+		<div class="mdl-layout__header-row center-content">
 
-    <div class="header-content">
-        <span class="username">{{controller.userInfo.name}}</span>
-        <!-- <a ng-click="controller.loadUserInfo()" href="">Load User</a> -->
-    </div>
+	        <img
+	            src="{{controller.userInfo.picture}}"
+	            width="50"
+	            height="50"
+	        />
 
-    <div class="header-logout">
-        <a ng-click="controller.logOut()" href="">LogOut</a>
-    </div>
+	        <span class="mdl-layout-title">{{controller.userInfo.name}}</span>
 
+			<div class="mdl-layout-spacer"></div>
+
+	        <a class="mdl-navigation__link" ng-click="controller.logOut()" href="">LogOut</a>
+
+		</div>
+
+	</header>
 
 </div>
