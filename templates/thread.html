@@ -1,41 +1,55 @@
 
-<div class="thread" ng-click="controller.selectComment(threadController)">
-	<div class="comment-row">
-		<img
-			class="user-img"
-			src="{{::threadController.authorProfileImageUrl}}"
-			height="75"
-			/>
-			<div class="comment-middle">
-				<div class="comment-header">
-					<a
-						class="comment-username"
-						href="{{::threadController.authorChannelUrl}}"
-						target="_blank"
-						>{{::threadController.authorDisplayName}}</a>
+<div
+	class="mdl-card mdl-shadow--4dp mdl-card--list mdl-layout--fixed-header"
+	ng-click="controller.selectComment(threadController)"
+	>
 
-					<div class="comment-date" title="{{::threadController.publishedAt | date:'medium'}}">
-						{{::threadController.publishedAtDisplay}}
-					</div>
-				</div>
-				<div
-					class="comment-text-middle"
-					ng-bind-html="threadController.textDisplay"
-					></div>
-			</div>
+	<header class="mdl-layout__header mdl-card__header">
+
+		<div class="mdl-layout__header-row mdl-card__header-row">
+
+			<!-- TODO: Handle long names on small screens -->
+
+			<img
+				class="user-img"
+				src="{{::threadController.authorProfileImageUrl}}"
+				height="50"
+				/>
 
 			<a
+				class="mdl-layout-title"
+				href="{{::threadController.authorChannelUrl}}"
+				target="_blank"
+				>{{::threadController.authorDisplayName}}</a>
+
+			<div class="mdl-layout-spacer"></div>
+
+			<span class="mdl-layout-title" title="{{::threadController.publishedAt | date:'medium'}}">
+				{{::threadController.publishedAtDisplay}}
+			</div>
+	</header>
+
+	<div class="mdl-card__supporting-text" >
+		<a
+			class="video-link"
+			href="{{::threadController.videoUrl}}"
+			target="_blank">
+			<img
 				class="video-img"
-				href="{{::threadController.videoUrl}}"
-				target="_blank">
-				<img
-					src="{{::threadController.videoImageUrl}}"
-					height="75"
-					/>
+				src="{{::threadController.videoImageUrl}}"
+				/>
 			</a>
+
+			<span ng-bind-html="threadController.textDisplay"></span>
+		</a>
 	</div>
 
-	<div class="comment-text-bottom" ng-bind-html="threadController.textDisplay"></div>
+	<!-- <div class="comment-row">
+			<div class="comment-middle">
+
+	</div>
+
+	<div class="comment-text-bottom" ng-bind-html="threadController.textDisplay"></div> -->
 </div>
 
 <!-- Post reply -->
