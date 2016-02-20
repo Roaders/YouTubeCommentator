@@ -17,7 +17,7 @@ html, body
 	padding: 5px;
 }
 
-.mdl-layout-title {
+.mdl-layout-title, .mdl-card__title-text {
 	padding: 5px;
 }
 

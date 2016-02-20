@@ -10,20 +10,20 @@
 
 			<!-- TODO: Handle long names on small screens -->
 
-			<img
-				class="avatar"
-				src="{{::threadController.authorProfileImageUrl}}"
-				/>
-
 			<a
-				class="mdl-layout-title"
 				href="{{::threadController.authorChannelUrl}}"
-				target="_blank"
-				>{{::threadController.authorDisplayName}}</a>
+				target="_blank">
+				<img
+					class="avatar"
+					src="{{::threadController.authorProfileImageUrl}}"
+					/>
+			</a>
+
+			<span class="mdl-card__title-text">{{::threadController.authorDisplayName}}</span>
 
 			<div class="mdl-layout-spacer"></div>
 
-			<span class="mdl-layout-title" title="{{::threadController.publishedAt | date:'medium'}}">
+			<span class="mdl-navigation__link" title="{{::threadController.publishedAt | date:'medium'}}">
 				{{::threadController.publishedAtDisplay}}
 			</div>
 	</header>
