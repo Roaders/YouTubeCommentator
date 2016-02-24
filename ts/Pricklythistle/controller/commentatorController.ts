@@ -53,6 +53,7 @@ module Pricklythistle.Controller {
 
 		displayMore() : void {
 			this._displayCount += 20;
+			console.log( `Display more threads: ${this._displayCount}` );
 			this.updateDisplayedThreads();
 		}
 

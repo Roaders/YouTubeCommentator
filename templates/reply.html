@@ -1,49 +1,59 @@
 
-<div class="reply" ng-click="controller.selectComment(replyController)">
-	<div class="comment-row">
-		<img
-			class="user-img"
-			src="{{::replyController.authorProfileImageUrl}}"
-			height="50"
-			width="50"
-			/>
-			<div class="comment-middle">
-				<div class="comment-header">
-					<a
-						class="comment-username"
-						href="{{::replyController.authorChannelUrl}}"
-						target="_blank"
-						>{{::replyController.authorDisplayName}}</a>
+<div class="mdl-card__actions mdl-card--border mdl-grid mdl-card--nopadding">
 
-					<div class="comment-date" title="{{::replyController.publishedAt | date:'medium'}}">
-						{{::replyController.publishedAtDisplay}}
-					</div>
-				</div>
-				<div
-					class="comment-text-middle"
-					ng-bind-html="replyController.textDisplay"
-					></div>
+	<header class="mdl-card__header mdl-layout__header--minor">
+
+		<div class="mdl-layout__header-row mdl-card__header-row">
+
+			<!-- TODO: Handle long names on small screens -->
+
+			<a
+				href="{{::replyController.authorChannelUrl}}"
+				target="_blank">
+				<img
+					class="avatar"
+					src="{{::replyController.authorProfileImageUrl}}"
+					/>
+			</a>
+
+			<span class="mdl-navigation__link">{{::replyController.authorDisplayName}}</span>
+
+			<div class="mdl-layout-spacer"></div>
+
+			<span class="mdl-navigation__link" title="{{::replyController.publishedAt | date:'medium'}}">
+				{{::replyController.publishedAtDisplay}}
 			</div>
+	</header>
+
+	<div
+		class="mdl-layout-row"
+		>
+
+		<div class="mdl-card__supporting-text" ng-bind-html="replyController.textDisplay"></div>
+
+		<button
+			ng-if="!replyController.isSelected"
+			class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+			ng-click="controller.selectComment(replyController)">
+				Reply</button>
+		<button
+			ng-if="replyController.isSelected"
+			class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+			ng-click="controller.selectComment(replyController)">
+				Cancel Reply</button>
+
 	</div>
 
-	<div class="comment-text-bottom" ng-bind-html="replyController.textDisplay"></div>
-</div>
 
 <!-- Post reply -->
 
-<div ng-if="replyController.isSelected" class="reply-reply-button">
+<div ng-if="replyController.isSelected" class="mdl-layout-row">
 
 	<textarea
 		ng-disabled="replyController.waitingForReplyResponse"
-		class="whole-width-textarea"
+		class="reply-textarea"
 		ng-model="replyController.replyText"
 		></textarea>
-
-	<div ng-if="replyController.replyPostError" class="alert alert-danger" role="alert">
-		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-		<span class="sr-only">Error:</span>
-		<span ng-bind-html="replyController.replyPostError"></span>
-	</div>
 
 	<div ng-if="replyController.waitingForReplyResponse" class="vertical-align">
 		<span>Posting...</span>
@@ -52,7 +62,7 @@
 
 	<button
 		ng-disabled="!replyController.replyEnabled || replyController.waitingForReplyResponse"
-		class="whole-width-button"
+		class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
 		ng-click="controller.postReply(threadController,replyController)"
 		>Reply</button>
 </div>

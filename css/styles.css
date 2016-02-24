@@ -39,6 +39,32 @@ html, body
 	height: 60px;
 }
 
+.mdl-layout-row{
+	display: flex;
+	padding: 5px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.reply-textarea {
+	width: 100%;
+	height: 50px;
+	margin-right: 5px;
+}
+
+.mdl-card--nopadding {
+	padding: 0;
+}
+
+.mdl-layout__header--minor {
+	padding: 0;
+	width: 100%;
+}
+
+.mdl-layout__header--minor .mdl-navigation__link {
+	color: black;
+}
+
 @media screen and (max-width: 600px){
 	.mdl-card__header-row{
 		height: 50px;
@@ -94,6 +120,14 @@ button.google:disabled {
 
 button.google:active {
     background: no-repeat url( "../assets/Google/btn_google_signin_dark_pressed_web.png" ) 0 0;
+}
+
+.loading-footer {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: lightgrey;
+	font-size: 40pt;
 }
 
 .large-loading {
