@@ -80,7 +80,8 @@ module Google.Services {
                         this.token = token;
                     },
                     error => {
-                        console.log(`Error authorizing access: ${error}`)
+                        console.log(`Error authorizing access: ${error}`);
+						alert( `There was a problem with authorisation: ${error}` );
                     });
         }
 

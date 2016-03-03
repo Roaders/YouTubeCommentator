@@ -1,9 +1,9 @@
 
-<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+<div class="mdl-layout--fixed-header">
 
     <ng-include src="'templates/header.html'" ></ng-include>
 
-	<main class="mdl-layout__content"
+	<main
 		infinite-scroll="controller.displayMore()"
 		infinite-scroll-distance='3'
 		infinite-scroll-disabled="controller.loadingDisplay">
