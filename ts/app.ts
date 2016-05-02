@@ -22,7 +22,7 @@ app.service( "googleAuthenticationService", Google.Services.GoogleAuthentication
 app.config( ( $routeProvider: angular.route.IRouteProvider ) => {
     $routeProvider
         .when( "/login", { templateUrl:"templates/login.html", controller: "loginController as controller" } )
-        .when( "/comments", { templateUrl:"templates/comments.html", controller: "commentatorController as controller" } )
+        .when( "/comments", { templateUrl:"templates/comments.html", controller: "commentatorController as commentsController" } )
         .otherwise( { redirectTo: "/login" } );
 } );
 

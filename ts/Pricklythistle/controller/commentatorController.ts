@@ -26,6 +26,7 @@ module Pricklythistle.Controller {
 		private _allThreads: ThreadController[];
 		private _displayCount: number;
 		private _selectedComment: ReplyController;
+		private _disposableStream: Rx.IDisposable;
 
 		//  Properties
 
@@ -49,6 +50,20 @@ module Pricklythistle.Controller {
 			this._selectedComment = commentController;
 
 			this._selectedComment.toggleSelection();
+		}
+
+		refresh(): void {
+			if( this._disposableStream ) {
+				this._disposableStream.dispose();
+				this._disposableStream = null;
+			}
+
+			this.loadingCount = undefined;
+			this._displayCount = 10;
+			this._threads = null;
+			this._allThreads = null;
+
+			this.loadCommentThreads();
 		}
 
 		displayMore() : void {
@@ -86,7 +101,7 @@ module Pricklythistle.Controller {
 			this.loadingCount = "";
 			this._displayCount = 10;
 
-			this.commentService.getCommentThreadsForChannel()
+			this._disposableStream = this.commentService.getCommentThreadsForChannel()
 				.map( thread => {
 					var controller: ThreadController = this.createThreadController( thread );
 					this._allThreads.push( this.createThreadController( thread ) );
@@ -117,6 +132,7 @@ module Pricklythistle.Controller {
 					() => {
 						console.timeEnd( "loading all comment threads" );
 							this.loadingCount = undefined;
+							this._disposableStream = null;
 					}
 				)
 				.subscribe();

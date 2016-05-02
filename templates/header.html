@@ -1,20 +1,22 @@
 
 <div class="mdl-layout--fixed-header">
 
-	<header class="mdl-layout__header" ng-controller="headerController as controller">
+	<header class="mdl-layout__header" ng-controller="headerController as headerController">
 
 		<div class="mdl-layout__header-row center-content">
 
 	        <img
 				class="avatar"
-	            src="{{controller.userInfo.picture}}"
+	            src="{{headerController.userInfo.picture}}"
 	        />
 
-	        <span class="mdl-layout-title">{{controller.userInfo.name}}</span>
+	        <span class="mdl-layout-title">{{headerController.userInfo.name}}</span>
 
 			<div class="mdl-layout-spacer"></div>
 
-	        <a class="mdl-navigation__link" ng-click="controller.logOut()" href="">LogOut</a>
+	        <a class="mdl-navigation__link" ng-click="commentsController.refresh()" href="">Refresh</a>
+
+	        <a class="mdl-navigation__link" ng-click="headerController.logOut()" href="">LogOut</a>
 
 		</div>
 

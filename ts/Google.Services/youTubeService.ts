@@ -285,7 +285,7 @@ module Google.Services {
 
 		private loadCommentThreads( channel: IChannel, lightweight: boolean = false, pageToken?: string, maxResults?: number ): Rx.Observable<ICommentThread[]> {
 
-				maxResults = maxResults || 30;
+				maxResults = maxResults || 10;
 				maxResults = Math.min( maxResults, 100 );
 
 				var part: string = lightweight ? "id,snippet" : "id,snippet,replies";

@@ -4,28 +4,28 @@
     <ng-include src="'templates/header.html'" ></ng-include>
 
 	<main
-		infinite-scroll="controller.displayMore()"
+		infinite-scroll="commentsController.displayMore()"
 		infinite-scroll-distance='3'
-		infinite-scroll-disabled="controller.loadingDisplay">
+		infinite-scroll-disabled="commentsController.loadingDisplay">
 
 		<div class="center-content"
 			>
 
-		    <div ng-if="controller.loadingCount" class="vertical-align">
+		    <div ng-if="commentsController.loadingCount" class="vertical-align">
 		        <span>Checking for replies...</span>
-				<span ng-if="controller.loadingCount !== ''">({{controller.loadingCount}} loaded)</span>
+				<span ng-if="commentsController.loadingCount !== ''">({{commentsController.loadingCount}} loaded)</span>
 		    </div>
 
-			<div ng-if="controller.message">
+			<div ng-if="commentsController.message">
 				{{controller.message}}
 			</div>
 
 		    <ng-include
-				ng-repeat="threadController in controller.threads"
+				ng-repeat="threadController in commentsController.threads"
 				src="'templates/thread.html'"
 				></ng-include>
 
-			<div ng-if="controller.loadingDisplay" class="loading-footer">
+			<div ng-if="commentsController.loadingDisplay" class="loading-footer">
 		        <span>Loading...</span>
 			</div>
 
