@@ -45,8 +45,9 @@ module Pricklythistle.Services {
 			console.log( `update ${threads.length} threads` );
 			const repliesStream: Rx.Observable<any> = this.updateReplies( threads );
 			const topCommentsStream: Rx.Observable<any> = this.updateTopComments( threads );
+			const titlesStream: Rx.Observable<any> = this.youTubeService.loadVideoTitles(threads.map( threadController => threadController.thread ));
 
-			return Rx.Observable.forkJoin( repliesStream, topCommentsStream )
+			return Rx.Observable.forkJoin( repliesStream, topCommentsStream, titlesStream )
 				.flatMap( results => Rx.Observable.return(threads))
 				.do( _ => console.log( `${threads.length} threads updated` ) );
 		}
@@ -164,43 +165,6 @@ module Pricklythistle.Services {
 		private threadFullyLoaded( thread: ICommentThread ): boolean {
 			return thread.replyLoadingStatus === LoadingStatus.loaded &&
 				thread.fullSnippetLoadingStatus === LoadingStatus.loaded;
-		}
-
-		private addToLocalStorage(threads : ICommentThread[]): void {
-			console.log( `addToLocalStorage: ${threads.length}` );
-
-			if(typeof(Storage) !== "undefined"){
-				const threadsToStore: ICommentThread[] =
-					threads.map( thread => this.createLightWeightThreadForStorage(thread) );
-
-				var json: string = JSON.stringify(threadsToStore);
-				localStorage.setItem( CommentService.threadStorageKey, json );
-			}
-		}
-
-		private createLightWeightThreadForStorage(thread: ICommentThread): ICommentThread {
-
-			const topComment: IComment = this.createLightWeightCommentForStorage(
-				thread.snippet.topLevelComment
-			);
-
-			var replies;
-			if( thread.replies && thread.replies.comments && thread.replies.comments.length > 0 ) {
-				replies = {};
-
-				replies.comments = thread.replies.comments.map( comment => this.createLightWeightCommentForStorage(comment) );
-			}
-
-			return {
-				id: thread.id,
-				snippet: {
-					videoId: thread.snippet.videoId,
-					canReply: thread.snippet.canReply,
-					totalReplyCount: thread.snippet.totalReplyCount,
-					topLevelComment: topComment
-				},
-				replies: replies
-			};
 		}
 
 		private createLightWeightCommentForStorage(comment: IComment) : IComment {

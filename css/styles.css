@@ -87,6 +87,13 @@ html, body
 	margin-left: 10px;
 }
 
+.video-link-title{
+	display:block;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 150px;
+}
+
 @media screen and (max-width: 400px){
 	.video-img {
 		width: 100px;

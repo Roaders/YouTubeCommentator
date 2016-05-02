@@ -34,6 +34,17 @@ module Google.Services {
         };
     }
 
+	export interface IVideo{
+		id: string,
+		snippet: {
+			title: string;
+		}
+	}
+
+	export interface IVideoList{
+		items: IVideo[];
+	}
+
 	export interface ICommentThreadList {
 		items: ICommentThread[];
 		nextPageToken: string;
@@ -48,6 +59,7 @@ module Google.Services {
         id: string;
         snippet: {
           videoId: string;
+	  	  videoTitle: string;
           topLevelComment: IComment;
           canReply: boolean;
           totalReplyCount: number;
@@ -68,11 +80,16 @@ module Google.Services {
         static channels: string = "https://www.googleapis.com/youtube/v3/channels";
         static commentThreads: string = "https://www.googleapis.com/youtube/v3/commentThreads";
         static comments: string = "https://www.googleapis.com/youtube/v3/comments";
+        static videos: string = "https://www.googleapis.com/youtube/v3/videos";
 
         //  Constructor
 
         constructor( private googleAuthenticationService: GoogleAuthenticationService ) {
         }
+
+		//  Private Variables
+
+		private _videoTitleLookup: {[id: string]: string};
 
         //  Functions
 
@@ -97,6 +114,8 @@ module Google.Services {
 
         getCommentThreadsForChannel(lightweight: boolean = false): Rx.Observable<ICommentThread> {
             //console.log(`loading comment threads lightweight: ${lightweight}`);
+
+			this._videoTitleLookup = {};
 
             return this.getChannelList()
                 .flatMap<IChannel>(  channelList => Rx.Observable.from(channelList)  )
@@ -189,6 +208,43 @@ module Google.Services {
 			});
 		}
 
+		loadVideoTitles(threads: ICommentThread[]): Rx.Observable<ICommentThread[]> {
+			return Rx.Observable.from(threads)
+				.map( thread => thread.snippet.videoId )
+				.distinct()
+				.filter( videoId => typeof this._videoTitleLookup[videoId] === 'undefined' )
+				.toArray()
+				.flatMap( videoIds => {
+
+					if(videoIds.length === 0){
+						console.log( `No video titles to load, returning empty array` );
+						return Rx.Observable.return({items: []});
+					}
+
+					return this.googleAuthenticationService.request<IVideoList>( {
+						path: YouTubeService.videos,
+						params: {
+						  part: "snippet",
+						  fields: "items(id,snippet/title)",
+						  id: videoIds.toString()
+						}
+					})
+				} )
+				.retry(3)
+				.do( videos => {
+
+					videos.items.forEach( video => {
+						this._videoTitleLookup[video.id] = video.snippet.title;
+					} );
+
+					threads.forEach( thread => {
+						thread.snippet.videoTitle = this._videoTitleLookup[thread.snippet.videoId];
+					}
+					);
+				} )
+				.map( _ => threads );
+		}
+
 		// Private Functions
 
 		private parseComment( comment: IComment ): void {
@@ -207,7 +263,7 @@ module Google.Services {
 				return this.loadReplies(thread)
 					.toArray()
 					.map( replies => {
-						console.log( `missing reply loaded` );
+						//console.log( `missing reply loaded` );
 						thread.replyLoadingStatus = LoadingStatus.loaded;
 						thread.replies = {comments: replies};
 						return thread;
