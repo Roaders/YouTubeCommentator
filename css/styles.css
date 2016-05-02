@@ -135,6 +135,7 @@ button.google:active {
 	justify-content: center;
 	color: lightgrey;
 	font-size: 40pt;
+	line-height: normal;
 }
 
 .large-loading {
