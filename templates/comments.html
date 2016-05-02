@@ -1,7 +1,7 @@
 
 <div class="mdl-layout--fixed-header">
 
-    <ng-include src="'templates/header.html'" ></ng-include>
+    <ng-include src="'templates/header.html?v=1.3.3'" ></ng-include>
 
 	<main
 		infinite-scroll="commentsController.displayMore()"
@@ -22,7 +22,7 @@
 
 		    <ng-include
 				ng-repeat="threadController in commentsController.threads"
-				src="'templates/thread.html'"
+				src="'templates/thread.html?v=1.3.3'"
 				></ng-include>
 
 			<div ng-if="commentsController.loadingDisplay" class="loading-footer">

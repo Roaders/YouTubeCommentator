@@ -34,12 +34,12 @@
 		<button
 			ng-if="!replyController.isSelected"
 			class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-			ng-click="controller.selectComment(replyController)">
+			ng-click="commentsController.selectComment(replyController)">
 				Reply</button>
 		<button
 			ng-if="replyController.isSelected"
 			class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-			ng-click="controller.selectComment(replyController)">
+			ng-click="commentsController.selectComment(replyController)">
 				Cancel Reply</button>
 
 	</div>
@@ -62,8 +62,9 @@
 	</div>
 
 	<button
+	 	ng-if="!replyController.waitingForReplyResponse"
 		ng-disabled="!replyController.replyEnabled || replyController.waitingForReplyResponse"
 		class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-		ng-click="controller.postReply(threadController,replyController)"
+		ng-click="commentsController.postReply(threadController,replyController)"
 		>Reply</button>
 </div>
