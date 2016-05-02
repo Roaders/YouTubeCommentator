@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Roaders/YouTubeCommentator",
   "dependencies": {
     "angular-cookies": "^1.5.0",
+    "angular-elastic": "^2.5.1",
     "angular-route": "^1.5.0",
     "angular-sanitize": "^1.5.0",
     "rx": "v4.0.6",

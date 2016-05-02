@@ -74,6 +74,7 @@
 					ng-disabled="threadController.waitingForReplyResponse"
 					class="reply-textarea"
 					ng-model="threadController.replyText"
+					msd-elastic="\n"
 					></textarea>
 
 				<div ng-if="threadController.waitingForReplyResponse">
