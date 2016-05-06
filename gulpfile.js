@@ -6,7 +6,8 @@ var gulp = require('gulp'),
 	processhtml = require('gulp-processhtml'),
 	uglify = require('gulp-uglify'),
 	fs = require('fs'),
-	replace = require('gulp-replace');
+	replace = require('gulp-replace'),
+	debug = require('gulp-debug');
 
 var releaseFolder = "release";
 var packageJson = JSON.parse(fs.readFileSync('./package.json'));
@@ -61,8 +62,9 @@ gulp.task('uglify', ['compile-ts'], function (callback) {
 
 gulp.task('replace', ['uglify','process-html','copy-release'], function () {
 	return gulp.src([releaseFolder + '/**/*.html',releaseFolder + '/app.js'])
+			.pipe( debug({title:"replace files"}))
 		   .pipe(replace( "__applicationVersionNumber__", packageJson.version ))
-		   .pipe(gulp.dest(releaseFolder));
+		   .pipe(gulp.dest("tempFolder"));
 });
 
 gulp.task('default', ['clean','compile-ts','copy-release','process-html','uglify','replace']);
