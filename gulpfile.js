@@ -12,59 +12,47 @@ var gulp = require('gulp'),
 var releaseFolder = "release";
 var packageJson = JSON.parse(fs.readFileSync('./package.json'));
 
-
-gulp.task('clean', function (callback) {
+gulp.task('clean', function () {
 	return gulp.src(releaseFolder, {read: false})
 		.pipe(clean());
-
-	callback();
 });
 
 /**
  * Compile TypeScript and include references to library and app .d.ts files.
  */
-gulp.task('compile-ts', ['clean'], function (callback) {
+gulp.task('compile-ts', ['clean'], function () {
 	var tsProject = ts.createProject('tsconfig.json', {outFile: "app.js"});
     var tsResult = tsProject.src().pipe(ts(tsProject));
 
     return tsResult.js.pipe(gulp.dest("./"));
-
-	callback();
 });
 
-gulp.task('copy-release', ['clean'], function (callback) {
-	gulp.src([
+gulp.task('copy-release', ['clean'], function () {
+	return gulp.src([
 		'./templates/**/*.html',
 		'./lib/**/*.js',
 		'./assets/**/*.*',
 		'./css/**/*.css'
 	], {base: './'})
   		.pipe(gulp.dest(releaseFolder));
-
-		callback();
 });
 
-gulp.task('process-html', ['clean'], function (callback) {
+gulp.task('process-html', ['clean'], function () {
 	return gulp.src("index.html")
 		   .pipe(processhtml())
 		   .pipe(gulp.dest(releaseFolder));
-
-	   	callback();
 });
 
-gulp.task('uglify', ['compile-ts'], function (callback) {
+gulp.task('uglify', ['compile-ts'], function () {
 	return gulp.src("app.js")
 		   .pipe(uglify())
 		   .pipe(gulp.dest(releaseFolder));
-
-	   	callback();
 });
 
 gulp.task('replace', ['uglify','process-html','copy-release'], function () {
 	return gulp.src([releaseFolder + '/**/*.html',releaseFolder + '/app.js'])
-			.pipe( debug({title:"replace files"}))
 		   .pipe(replace( "__applicationVersionNumber__", packageJson.version ))
-		   .pipe(gulp.dest("tempFolder"));
+		   .pipe(gulp.dest(releaseFolder));
 });
 
 gulp.task('default', ['clean','compile-ts','copy-release','process-html','uglify','replace']);
