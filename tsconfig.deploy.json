@@ -2,8 +2,9 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "es5",
-    "sourceMap": true,
-    "diagnostics": true
+    "sourceMap": false,
+    "diagnostics": true,
+	"outFile": "app.js"
   },
   "files": [
     "ts/app.ts"
