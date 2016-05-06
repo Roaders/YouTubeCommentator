@@ -2,10 +2,15 @@
  * Created by Giles on 08/02/2016.
  */
 
-import ICommentThread = Google.Services.ICommentThread;
-import IComment = Google.Services.IComment;
-import ThreadController = Pricklythistle.Controller.ThreadController;
-import ReplyController = Pricklythistle.Controller.ReplyController;
+/// <reference path="../node_modules/rx/ts/rx.all.d.ts"/>
+/// <reference path="../node_modules/rx-angular/ts/rx.angular.d.ts"/>
+/// <reference path="../typings/browser.d.ts"/>
+/// <reference path="Google.Services/youTubeService.ts"/>
+/// <reference path="Google.Services/googleAuthenticationService.ts"/>
+/// <reference path="Pricklythistle/services/commentsService.ts"/>
+/// <reference path="Pricklythistle/controller/commentatorController.ts"/>
+/// <reference path="Pricklythistle/controller/loginController.ts"/>
+/// <reference path="Pricklythistle/controller/headerController.ts"/>
 
 const scopes: string = "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/youtube.force-ssl";
 

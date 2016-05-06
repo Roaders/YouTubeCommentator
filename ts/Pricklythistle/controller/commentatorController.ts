@@ -2,6 +2,9 @@
  * Created by Giles on 08/02/2016.
  */
 
+ /// <reference path="./threadController.ts"/>
+ /// <reference path="./replyController.ts"/>
+
 module Pricklythistle.Controller {
 	import CommentService = Pricklythistle.Services.CommentService;
 	import IUserInfo = Google.Services.IUserInfo;

@@ -1,8 +1,13 @@
 
+/// <reference path="../../Google.Services/youTubeService.ts"/>
+/// <reference path="../controller/threadController.ts"/>
 
 module Pricklythistle.Services {
 	import YouTubeService = Google.Services.YouTubeService;
 	import LoadingStatus = Google.Services.LoadingStatus;
+	import ICommentThread = Google.Services.ICommentThread;
+	import IComment = Google.Services.IComment;
+	import ThreadController = Pricklythistle.Controller.ThreadController;
 
 	export class CommentService {
 

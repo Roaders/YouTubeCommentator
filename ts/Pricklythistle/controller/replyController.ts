@@ -1,4 +1,5 @@
 
+/// <reference path="../util/dateUtil.ts"/>
 
 module Pricklythistle.Controller {
 

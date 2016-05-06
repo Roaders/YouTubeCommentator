@@ -2,6 +2,9 @@
  * Created by Giles on 08/02/2016.
  */
 
+
+/// <reference path="./googleAuthenticationService.ts"/>
+
 module Google.Services {
 
     import HttpRequest = gapi.client.HttpRequest;
