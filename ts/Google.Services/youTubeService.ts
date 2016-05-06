@@ -79,11 +79,15 @@ module Google.Services {
 
     export class YouTubeService {
 
+		//  Statics
+
         static userInfo: string = "https://www.googleapis.com/oauth2/v2/userinfo";
         static channels: string = "https://www.googleapis.com/youtube/v3/channels";
         static commentThreads: string = "https://www.googleapis.com/youtube/v3/commentThreads";
         static comments: string = "https://www.googleapis.com/youtube/v3/comments";
         static videos: string = "https://www.googleapis.com/youtube/v3/videos";
+
+		static $inject = ["googleAuthenticationService"];
 
         //  Constructor
 

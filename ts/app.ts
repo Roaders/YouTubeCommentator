@@ -24,12 +24,12 @@ app.service( "googleAuthenticationService", Google.Services.GoogleAuthentication
 	.service( "youTubeService", Google.Services.YouTubeService )
 	.service( "commentService", Pricklythistle.Services.CommentService );
 
-app.config( ( $routeProvider: angular.route.IRouteProvider ) => {
+app.config( ['$routeProvider',( $routeProvider: angular.route.IRouteProvider ) => {
     $routeProvider
         .when( "/login", { templateUrl:"templates/login.html?v=1.3.3", controller: "loginController as controller" } )
         .when( "/comments", { templateUrl:"templates/comments.html?v=1.3.3", controller: "commentatorController as commentsController" } )
         .otherwise( { redirectTo: "/login" } );
-} );
+}] );
 
 angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500);
 

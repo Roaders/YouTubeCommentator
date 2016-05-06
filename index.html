@@ -16,19 +16,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
     <!-- Rx -->
-    <script src="node_modules/rx/dist/rx.all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.6/rx.all.min.js"></script>
 
     <!-- Angular -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
-    <script src="node_modules/rx-angular/dist/rx.angular.js"></script>
-    <script src="node_modules/angular-route/angular-route.js"></script>
-    <script src="node_modules/angular-cookies/angular-cookies.js"></script>
-    <script src="node_modules/angular-sanitize/angular-sanitize.js"></script>
-    <script src="node_modules/angular-elastic/elastic.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/rx-angular/1.1.3/rx.angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-cookies.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-sanitize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-elastic/2.5.1/elastic.min.js"></script>
+
+    <!-- Infinite Scroll -->
+
     <script src="lib/ng-infinite-scroll.js"></script>
 
     <!-- App Files -->
 
+	<!-- build:remove -->
     <script src="ts/Pricklythistle/util/dateUtil.js"></script>
 
     <script src="ts/Google.Services/googleAuthenticationService.js?v=1.3.3"></script>
@@ -41,8 +45,11 @@
     <script src="ts/Pricklythistle/controller/commentatorController.js?v=1.3.3"></script>
     <script src="ts/Pricklythistle/controller/replyController.js?v=1.3.3"></script>
     <script src="ts/Pricklythistle/controller/threadController.js?v=1.3.3"></script>
+	<!-- /build -->
 
+	<!-- build:js app.js -->
     <script src="ts/app.js?v=1.3.3"></script>
+	<!-- /build -->
 
 
     <!-- Google Auth Client -->

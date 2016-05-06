@@ -9,6 +9,10 @@ module Pricklythistle.Controller {
 
     export class HeaderController {
 
+		//  Statics
+
+		static $inject = ["googleAuthenticationService","youTubeService","$rootScope"];
+
         //  Constructor
 
         constructor(

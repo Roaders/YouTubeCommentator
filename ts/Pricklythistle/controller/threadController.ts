@@ -1,4 +1,5 @@
 
+/// <reference path="./replyController.ts"/>
 
 module Pricklythistle.Controller {
 

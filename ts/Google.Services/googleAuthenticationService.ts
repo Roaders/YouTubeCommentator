@@ -29,6 +29,8 @@ module Google.Services {
 
         static cookie_Key: string = "userToken";
 
+		static $inject = ["$http","$rootScope","$location","$cookies","authorizationScopes"];
+
         //  Constructor
 
         constructor(

@@ -9,6 +9,10 @@ module Pricklythistle.Controller {
 
     export class LoginController {
 
+		//  Statics
+
+		static $inject = ["googleAuthenticationService"];
+
         //  Constructor
 
         constructor(

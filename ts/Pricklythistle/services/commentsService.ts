@@ -15,6 +15,8 @@ module Pricklythistle.Services {
 
 		static threadStorageKey: string = "channelThreads";
 
+		static $inject = ["youTubeService", "$rootScope", "$filter"];
+
 		// Constructor
 
 		constructor(

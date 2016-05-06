@@ -14,6 +14,10 @@ module Pricklythistle.Controller {
 	// TODO: dispose of observable when logout
 	export class CommentatorController {
 
+		//  Statics
+
+		static $inject = ["commentService","$rootScope","$filter"];
+
 		//  Constructor
 
 		constructor(
