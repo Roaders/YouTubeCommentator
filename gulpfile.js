@@ -31,7 +31,7 @@ gulp.task('compile-ts', ['clean'], function (callback) {
 	callback();
 });
 
-gulp.task('copy-release', ['clean'], function () {
+gulp.task('copy-release', ['clean'], function (callback) {
 	gulp.src([
 		'./templates/**/*.html',
 		'./lib/**/*.js',
@@ -39,22 +39,28 @@ gulp.task('copy-release', ['clean'], function () {
 		'./css/**/*.css'
 	], {base: './'})
   		.pipe(gulp.dest(releaseFolder));
+
+		callback();
 });
 
-gulp.task('process-html', ['clean'], function () {
+gulp.task('process-html', ['clean'], function (callback) {
 	return gulp.src("index.html")
 		   .pipe(processhtml())
 		   .pipe(gulp.dest(releaseFolder));
+
+	   	callback();
 });
 
-gulp.task('uglify', ['compile-ts'], function () {
+gulp.task('uglify', ['compile-ts'], function (callback) {
 	return gulp.src("app.js")
 		   .pipe(uglify())
 		   .pipe(gulp.dest(releaseFolder));
+
+	   	callback();
 });
 
-gulp.task('replace', ['uglify','process-html'], function () {
-	return gulp.src([releaseFolder + '/index.html',releaseFolder + '/app.js'])
+gulp.task('replace', ['uglify','process-html','copy-release'], function () {
+	return gulp.src([releaseFolder + '/**/*.html',releaseFolder + '/app.js'])
 		   .pipe(replace( "__applicationVersionNumber__", packageJson.version ))
 		   .pipe(gulp.dest(releaseFolder));
 });
