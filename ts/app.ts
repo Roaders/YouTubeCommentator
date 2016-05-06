@@ -26,8 +26,8 @@ app.service( "googleAuthenticationService", Google.Services.GoogleAuthentication
 
 app.config( ['$routeProvider',( $routeProvider: angular.route.IRouteProvider ) => {
     $routeProvider
-        .when( "/login", { templateUrl:"templates/login.html?v=1.3.3", controller: "loginController as controller" } )
-        .when( "/comments", { templateUrl:"templates/comments.html?v=1.3.3", controller: "commentatorController as commentsController" } )
+        .when( "/login", { templateUrl:"templates/login.html?v=__applicationVersionNumber__", controller: "loginController as controller" } )
+        .when( "/comments", { templateUrl:"templates/comments.html?v=__applicationVersionNumber__", controller: "commentatorController as commentsController" } )
         .otherwise( { redirectTo: "/login" } );
 }] );
 

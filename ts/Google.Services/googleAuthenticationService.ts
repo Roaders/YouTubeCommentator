@@ -193,6 +193,11 @@ module Google.Services {
                         return Rx.Observable.fromPromise<ng.IHttpPromiseCallbackArg<IAppDetails>>( this.$http.get( url ) );
                     } )
                     .retry(3)
+					.doOnError( error => {
+						console.log( "Error loading client_id: ")
+						console.dir(error);
+						alert( "There was a problem loading the client id" );
+					} )
                     .map(callback => {
                         return callback.data.web;
                     })
