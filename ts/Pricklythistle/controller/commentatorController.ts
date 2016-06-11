@@ -146,20 +146,10 @@ module Pricklythistle.Controller {
 		}
 
 		private updateDisplayedThreads(): void {
-			this.loadingDisplay = true;
 
 			var threadsToDisplay = this._allThreads.slice(0, this._displayCount );
-
-			this.commentService.updateThreads( threadsToDisplay )
-				.safeApply( this.$rootScope,
-					loadedThreads => {},
-					_ => {},
-					() => {
-						threadsToDisplay = this.$filter( 'orderBy' )(threadsToDisplay, 'latestReply', true);
-						this._threads = threadsToDisplay;
-						this.loadingDisplay = false;
-				})
-				.subscribe();
+			threadsToDisplay = this.$filter( 'orderBy' )(threadsToDisplay, 'latestReply', true);
+			this._threads = threadsToDisplay;
 		}
 
 		private createThreadController( thread: ICommentThread ): ThreadController {

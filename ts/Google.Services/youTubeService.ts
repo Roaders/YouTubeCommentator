@@ -31,6 +31,7 @@ module Google.Services {
             parentId: string;
             publishedAt: Date;
             textDisplay?: string;
+			textOriginal?: string;
             authorDisplayName?: string;
             authorProfileImageUrl?: string;
             authorChannelUrl?: string;
@@ -257,6 +258,10 @@ module Google.Services {
 		private parseComment( comment: IComment ): void {
 			if(comment && comment.snippet && comment.snippet.publishedAt ) {
 				comment.snippet.publishedAt = new Date( Date.parse( <any>comment.snippet.publishedAt ) );
+			}
+
+			if( comment.snippet.textDisplay === "" && comment.snippet.textOriginal != null && comment.snippet.textOriginal != "" ){
+				comment.snippet.textDisplay = comment.snippet.textOriginal;
 			}
 		}
 
