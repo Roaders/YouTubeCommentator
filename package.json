@@ -1,6 +1,6 @@
 {
   "name": "YouTubeCommentator",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "description": "A webpage to easily manage comments and replies on a youTubeChannel",
   "main": "index.html",
   "scripts": {
@@ -21,8 +21,7 @@
     "url": "https://github.com/Roaders/YouTubeCommentator/issues"
   },
   "homepage": "https://github.com/Roaders/YouTubeCommentator",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "gulp-uglify": "^1.5.3",
     "grunt": "^1.0.1",
