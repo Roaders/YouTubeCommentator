@@ -4,7 +4,7 @@
   "description": "A webpage to easily manage comments and replies on a youTubeChannel",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postversion": "gulp"
   },
   "repository": {
     "type": "git",
@@ -22,10 +22,9 @@
   },
   "homepage": "https://github.com/Roaders/YouTubeCommentator",
   "dependencies": {
-    "angular-cookies": "^1.5.0",
-    "angular-elastic": "^2.5.1",
-    "angular-route": "^1.5.0",
-    "angular-sanitize": "^1.5.0",
+  },
+  "devDependencies": {
+    "gulp-uglify": "^1.5.3",
     "grunt": "^1.0.1",
     "grunt-contrib-uglify": "^1.0.1",
     "gulp": "^3.9.1",
@@ -38,8 +37,5 @@
     "rx-angular": "^1.1.3",
     "typescript": "^1.7.5",
     "typing": "^0.1.9"
-  },
-  "devDependencies": {
-    "gulp-uglify": "^1.5.3"
   }
 }
