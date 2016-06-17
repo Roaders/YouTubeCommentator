@@ -5,6 +5,8 @@ module Pricklythistle.Controller {
 
 	import ICommentThread = Google.Services.ICommentThread;
 	import IComment = Google.Services.IComment;
+	import LoadingStatus = Google.Services.LoadingStatus;
+	import CommentService = Pricklythistle.Services.CommentService;
 
 	export class ThreadController extends ReplyController {
 
@@ -13,6 +15,7 @@ module Pricklythistle.Controller {
 		constructor(
 			private _thread: ICommentThread,
 			private $filter: ng.IFilterService,
+			private commentService: CommentService,
 			$rootScope: ng.IScope
 			) {
 
@@ -23,17 +26,21 @@ module Pricklythistle.Controller {
 
 		// Private Variables
 
-
 		private _allReplies: ReplyController[];
 
 		// Properties
 
 		get buttonText() : string {
-			if( this._allReplies && this._allReplies.length > 1 ){
+			if( this.loadingReplies ){
+				return "Loading...";
+			}
+			else if( this._allReplies && this._allReplies.length > 1 ){
 				if( this._allRepliesShown ){
 					return "Hide Replies"
 				} else {
-					return `Show ${this._allReplies.length - 1} additional replies`
+					const replyCount = this._thread.replyLoadingStatus == LoadingStatus.loaded ? this._allReplies.length : this._thread.snippet.totalReplyCount;
+
+					return `Show ${replyCount - 1} additional replies`
 				}
 			} else {
 				return undefined;
@@ -81,9 +88,33 @@ module Pricklythistle.Controller {
 			return this._allRepliesShown;
 		}
 
+		private _loadingReplies: boolean = false;
+
+		get loadingReplies(): boolean{
+			return this._loadingReplies;
+		}
+
 		// Public Functions
 
 		toggleReplyDisplay(): void {
+			if(this._thread.replyLoadingStatus != LoadingStatus.loaded){
+				this._loadingReplies = true;
+
+				this.commentService.updateReplies(this._thread)
+					.safeApply( this._rootScope,
+						 _ => {
+
+						this._loadingReplies = false;
+
+						this.updateReplies();
+
+						this.toggleReplyDisplay();
+					} )
+					.subscribe();
+
+				return;
+			}
+
 			if ( this._allReplies && this._allReplies.length > 1 ){
 				this._allRepliesShown = !this._allRepliesShown;
 			} else {

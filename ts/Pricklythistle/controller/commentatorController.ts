@@ -163,7 +163,7 @@ module Pricklythistle.Controller {
 		}
 
 		private createThreadController( thread: ICommentThread ): ThreadController {
-			return new ThreadController( thread, this.$filter, this.$rootScope );
+			return new ThreadController( thread, this.$filter, this.commentService, this.$rootScope );
 		}
 	}
 }

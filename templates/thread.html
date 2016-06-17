@@ -50,7 +50,9 @@
 			<button
 				ng-if="threadController.buttonText"
 				class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
-				ng-click="threadController.toggleReplyDisplay()">{{threadController.buttonText}}</button>
+				ng-click="threadController.toggleReplyDisplay()"
+				ng-disabled="threadController.loadingReplies"
+				>{{threadController.buttonText}}</button>
 
 			<div class="mdl-layout-spacer"></div>
 

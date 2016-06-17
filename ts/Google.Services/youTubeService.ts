@@ -130,7 +130,14 @@ module Google.Services {
 				.do( thread => {
 					this.parseComment( thread.snippet.topLevelComment );
 
+					const replyCount = thread.replies ? thread.replies.comments.length : 0;
+
+					if( thread.snippet.totalReplyCount <= replyCount ){
+						thread.replyLoadingStatus = LoadingStatus.loaded;
+					}
+
 					if( thread.replies){
+
 						thread.replies.comments.forEach( reply => {
 							this.parseComment( reply );
 						} );

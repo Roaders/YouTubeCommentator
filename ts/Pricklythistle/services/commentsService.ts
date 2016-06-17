@@ -59,51 +59,55 @@ module Pricklythistle.Services {
 				);
 		}
 
-		// Private Functions
+		updateReplies( thread: ICommentThread ): Rx.Observable<ICommentThread> {
 
-		private updateReplies( threads: ThreadController[] ): Rx.Observable<number> {
+			if( thread.replyLoadingStatus == LoadingStatus.loaded ||
+				thread.replyLoadingStatus == LoadingStatus.loading
+			){
+				return Rx.Observable.return(thread);
+			}
 
 			return Rx.Observable
-				.from<ThreadController>( threads )
-				.filter( controller => this.replyLoadNotStarted( controller.thread ) )
-				.flatMap<IComment[]>( controller => {
+				.just( thread )
+				.flatMap<IComment[]>( thread => {
 
 					//console.log( `Loading replies for ${controller.thread.id}` );
-					controller.thread.replyLoadingStatus = LoadingStatus.loading;
-					return this.youTubeService.loadRepliesForThread( controller.thread )
+					thread.replyLoadingStatus = LoadingStatus.loading;
+					return this.youTubeService.loadRepliesForThread( thread )
 						.toArray();
 				} )
-				.map( replies => {
-					if( !replies || replies.length === 0 || !replies[0].snippet ) {
-						console.log( "no snippets for reply, returning" );
-						return;
+				.flatMap( replies => {
+
+					const existingIds = thread.replies.comments.map( comment => comment.id );
+
+					replies.forEach( reply => {
+						if( existingIds.indexOf(reply.id) < 0 ){
+							thread.replies.comments.push(reply);
+						}
+					} );
+
+					const blankReplies = thread.replies.comments.filter( reply => reply.snippet.textDisplay === "" );
+
+					if( blankReplies.length > 0 ){
+						return this.youTubeService.loadReplyList( blankReplies.map( reply => reply.id ) )
+							.toArray()
+							.do( replies => {
+
+								const existingIds = thread.replies.comments.map( comment => comment.id );
+
+								replies.forEach( reply => {
+									thread.replies.comments[existingIds.indexOf(reply.id)] = reply;
+								});
+
+								thread.replyLoadingStatus = LoadingStatus.loaded;
+							});
 					}
 
-					var parentThreadList: ThreadController[] = threads
-						.filter( controller => controller.thread.id == replies[0].snippet.parentId );
-
-					if( parentThreadList.length != 1 ){
-						throw Error( "could not find thread to update" );
-					}
-					const thread: ICommentThread = parentThreadList[0].thread;
-
-					thread.replies.comments = replies;
 					thread.replyLoadingStatus = LoadingStatus.loaded;
-					parentThreadList[0].thread = thread;
 
-					return replies;
+					return Rx.Observable.return(replies)
 				})
-				.count()
-				.do( ( count ) => {
-					if(count > 0) {
-						console.log(`${count} reply threads loaded`);
-					}
-				} );
-		}
-
-		private replyLoadNotStarted( thread: ICommentThread ): boolean {
-			return thread.replyLoadingStatus !== LoadingStatus.loaded &&
-				thread.replyLoadingStatus !== LoadingStatus.loading
+				.map(_ => thread)
 		}
 	}
 
