@@ -10,14 +10,11 @@ module Pricklythistle.Controller {
 
 		// Constructor
 
-		constructor( comment: IComment, $rootScope: ng.IScope ) {
-			this._comment = comment;
+		constructor( private _comment: IComment, $rootScope: ng.IScope ) {
 			this._rootScope = $rootScope;
 		}
 
 		// Private Variables
-
-		private _comment: IComment;
 		private _initialReplyText: string;
 		protected _rootScope: ng.IScope
 

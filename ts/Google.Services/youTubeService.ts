@@ -31,7 +31,6 @@ module Google.Services {
             parentId: string;
             publishedAt: Date;
             textDisplay?: string;
-			textOriginal?: string;
             authorDisplayName?: string;
             authorProfileImageUrl?: string;
             authorChannelUrl?: string;
@@ -70,7 +69,6 @@ module Google.Services {
 	  	};
         replies?: { comments: IComment[] };
 		replyLoadingStatus?: LoadingStatus;
-		fullSnippetLoadingStatus?: LoadingStatus;
     }
 
     export interface IChannel {
@@ -120,50 +118,59 @@ module Google.Services {
 				} );
         }
 
-        getCommentThreadsForChannel(lightweight: boolean = false): Rx.Observable<ICommentThread> {
+        getCommentThreadsForChannel(): Rx.Observable<ICommentThread> {
             //console.log(`loading comment threads lightweight: ${lightweight}`);
 
 			this._videoTitleLookup = {};
 
             return this.getChannelList()
                 .flatMap<IChannel>(  channelList => Rx.Observable.from(channelList)  )
-                .flatMap( channel => this.loadCommentThreads( channel, lightweight ) )
-				.flatMap<ICommentThread>( threads => {
-					var allReplyStreams: Rx.Observable<ICommentThread[]>[] = [];
+                .flatMap( channel => this.loadCommentThreads( channel ) )
+				.flatMap<ICommentThread>( threads => Rx.Observable.from(threads) )
+				.do( thread => {
+					this.parseComment( thread.snippet.topLevelComment );
 
-					threads.forEach(thread => {
-						this.parseComment( thread.snippet.topLevelComment );
-						allReplyStreams.push( this.loadMissingRepliesForThread(thread).toArray() );
-					});
-
-					return Rx.Observable.combineLatest<ICommentThread[],ICommentThread[]>( allReplyStreams, (...values) => {
-						return [].concat.apply([],values);
-					} )
-						.flatMap<ICommentThread>( threads => Rx.Observable.from(threads) );
+					if( thread.replies){
+						thread.replies.comments.forEach( reply => {
+							this.parseComment( reply );
+						} );
+					}
 				});
         }
 
-		loadTopComments( ids: string[] ): Rx.Observable<IComment[]> {
+		loadReplyList( idList: string[], pageToken?: string ): Rx.Observable<IComment> {
 
 			return Rx.Observable.defer<ICommentList>( () => {
 				return this.googleAuthenticationService.request<ICommentList>( {
 					path: YouTubeService.comments,
 					params: {
 					  part: "id,snippet",
-					  fields: "items(id,snippet)",
-					  textFormat: "plainText",
-					  id: ids.toString()
+					  fields: "items(id,snippet),nextPageToken",
+					  textFormat: "html",
+					  id: idList.toString(),
+					  pageToken: pageToken,
+					  maxResults: 100
 					}
 				})
 			} )
 			.retry(3)
-			.map( commentList => {
-				commentList.items.forEach(comment => this.parseComment(comment));
-				return commentList.items;
-			} );
+			.flatMap( commentList => {
+
+				commentList.items.forEach( reply => {
+					this.parseComment( reply );
+				} );
+
+				const comments = Rx.Observable.from<IComment>(commentList.items)
+
+				if( commentList.nextPageToken ) {
+					return comments.concat( this.loadReplyList( idList, commentList.nextPageToken ) );
+				}
+
+				return comments;
+			});
 		}
 
-		loadReplies( thread: ICommentThread, pageToken?: string ): Rx.Observable<IComment> {
+		loadRepliesForThread( thread: ICommentThread, pageToken?: string ): Rx.Observable<IComment> {
 
 			return Rx.Observable.defer<ICommentList>( () => {
 				return this.googleAuthenticationService.request<ICommentList>( {
@@ -188,7 +195,7 @@ module Google.Services {
 				const comments = Rx.Observable.from<IComment>(commentList.items)
 
 				if( commentList.nextPageToken ) {
-					return comments.concat( this.loadReplies( thread, commentList.nextPageToken ) );
+					return comments.concat( this.loadRepliesForThread( thread, commentList.nextPageToken ) );
 				}
 
 				return comments;
@@ -212,20 +219,22 @@ module Google.Services {
 			} )
 			.retry(3)
 			.flatMap<IComment[]>( _ => {
-				return this.loadReplies( thread ).toArray();
+				return this.loadRepliesForThread( thread ).toArray();
 			});
 		}
 
 		loadVideoTitles(threads: ICommentThread[]): Rx.Observable<ICommentThread[]> {
-			return Rx.Observable.from(threads)
+
+			const threadsToLoad = threads.filter( thread => thread.snippet.videoTitle === undefined );
+
+			return Rx.Observable.from(threadsToLoad)
 				.map( thread => thread.snippet.videoId )
 				.distinct()
-				.filter( videoId => typeof this._videoTitleLookup[videoId] === 'undefined' )
+				.filter( videoId => typeof this._videoTitleLookup[videoId] === 'undefined' && videoId != null )
 				.toArray()
 				.flatMap( videoIds => {
 
 					if(videoIds.length === 0){
-						console.log( `No video titles to load, returning empty array` );
 						return Rx.Observable.return({items: []});
 					}
 
@@ -245,12 +254,18 @@ module Google.Services {
 						this._videoTitleLookup[video.id] = video.snippet.title;
 					} );
 
-					threads.forEach( thread => {
-						thread.snippet.videoTitle = this._videoTitleLookup[thread.snippet.videoId];
+					threadsToLoad.forEach( thread => {
+						if(this._videoTitleLookup[thread.snippet.videoId]){
+							thread.snippet.videoTitle = this._videoTitleLookup[thread.snippet.videoId];
+						}
+						else
+						{
+							thread.snippet.videoTitle = null;
+						}
 					}
 					);
 				} )
-				.map( _ => threads );
+				.map( _ => threadsToLoad );
 		}
 
 		// Private Functions
@@ -259,48 +274,50 @@ module Google.Services {
 			if(comment && comment.snippet && comment.snippet.publishedAt ) {
 				comment.snippet.publishedAt = new Date( Date.parse( <any>comment.snippet.publishedAt ) );
 			}
-
-			if( comment.snippet.textDisplay === "" && comment.snippet.textOriginal != null && comment.snippet.textOriginal != "" ){
-				comment.snippet.textDisplay = comment.snippet.textOriginal;
-			}
 		}
 
 		private loadMissingRepliesForThread(thread: ICommentThread): Rx.Observable<ICommentThread> {
 
 			var existingReplies: number = thread.replies ? thread.replies.comments.length : 0;
 
+			if( thread.replies ) {
+				//console.log( `thread replies already loaded ${thread.id}` );
+				thread.replies.comments.forEach( reply => {
+					this.parseComment( reply );
+				} );
+			}
+
 			if( thread.snippet.totalReplyCount > existingReplies ) {
 				//console.log( `replies require load ${thread.id}` );
-				thread.replyLoadingStatus = LoadingStatus.loading;
-				return this.loadReplies(thread)
+				return this.loadRepliesForThread(thread)
 					.toArray()
 					.map( replies => {
 						//console.log( `missing reply loaded` );
-						thread.replyLoadingStatus = LoadingStatus.loaded;
-						thread.replies = {comments: replies};
+
+						replies.forEach( reply => {
+							if(thread.replies.comments.filter( comment => comment.id == reply.id ).length === 0){
+								console.log(`reply does not exist, adding`);
+								thread.replies.comments.push( reply );
+							}
+							else{
+								console.log(`reply exists, not adding`);
+							}
+						});
+
 						return thread;
 					} );
 			} else {
-				if( thread.replies ) {
-					//console.log( `thread replies already loaded ${thread.id}` );
-					thread.replyLoadingStatus = LoadingStatus.notStarted;
-					thread.replies.comments.forEach( reply => {
-						this.parseComment( reply );
-					} );
-				} else if(thread.snippet.totalReplyCount === 0) {
-					//console.log( `thread has no replies ${thread.id}` );
-					thread.replyLoadingStatus = LoadingStatus.loaded;
-				}
+				thread.replyLoadingStatus = LoadingStatus.loaded;
 				return Rx.Observable.return(thread);
 			}
 		}
 
-		private loadCommentThreads( channel: IChannel, lightweight: boolean = false, pageToken?: string, maxResults?: number ): Rx.Observable<ICommentThread[]> {
+		private loadCommentThreads( channel: IChannel, pageToken?: string, maxResults?: number ): Rx.Observable<ICommentThread[]> {
 
 				maxResults = maxResults || 10;
 				maxResults = Math.min( maxResults, 100 );
 
-				var part: string = lightweight ? "id,snippet" : "id,snippet,replies";
+				var part: string = "id,snippet,replies";
 
 				const commentFields: string = `id,snippet(parentId,publishedAt,textDisplay,authorDisplayName,authorProfileImageUrl,authorChannelUrl)`;
 				const fields: string =`items(id,replies(comments(${commentFields})),snippet(videoId,totalReplyCount,canReply,topLevelComment(${commentFields}))),nextPageToken`;
@@ -319,12 +336,12 @@ module Google.Services {
 				} )
 				.retry(3)
 				.flatMap<ICommentThread[]>( commentThreadList => {
-					console.log( `Comment threads loaded: (${commentThreadList.items.length}, lightweight: ${lightweight})`);
+					console.log( `Comment threads loaded: (${commentThreadList.items.length})`);
 
 					const threadList = Rx.Observable.return<ICommentThread[]>(commentThreadList.items);
 
 					if( commentThreadList.nextPageToken ) {
-						const nextObservable = this.loadCommentThreads( channel, lightweight, commentThreadList.nextPageToken, maxResults + 20 );
+						const nextObservable = this.loadCommentThreads( channel, commentThreadList.nextPageToken, maxResults + 20 );
 						return Rx.Observable.merge( threadList, nextObservable );
 					}
 
