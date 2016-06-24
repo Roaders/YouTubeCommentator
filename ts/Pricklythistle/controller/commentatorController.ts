@@ -39,7 +39,7 @@ module Pricklythistle.Controller {
 
 		loadingCount: string;
 		message: string;
-		loadingDisplay: boolean
+		loadingDisplay: boolean = true;
 
 		private _threads: ThreadController[];
 
@@ -69,6 +69,8 @@ module Pricklythistle.Controller {
 			this._displayCount = 10;
 			this._threads = null;
 			this._allThreads = null;
+			this.loadingDisplay = true;
+			this.message = null;
 
 			this.loadCommentThreads();
 		}
@@ -127,6 +129,7 @@ module Pricklythistle.Controller {
 					},
 					error => {
 						this.loadingCount = undefined;
+						this.loadingDisplay = false;
 
 						if( error.result ) {
 							this.message = `Error loading threads. Status: ${error.result.error.code} (${error.result.error.message})`
