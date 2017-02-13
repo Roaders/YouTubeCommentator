@@ -28,7 +28,7 @@
     "grunt-contrib-uglify": "^2.0.0",
     "gulp": "^3.9.1",
     "gulp-clean": "^0.3.2",
-    "gulp-debug": "^3.0.0",
+    "gulp-debug": "^3.1.0",
     "gulp-processhtml": "^1.1.0",
     "gulp-replace": "^0.5.4",
     "gulp-typescript": "^3.1.4",
