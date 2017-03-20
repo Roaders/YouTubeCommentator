@@ -23,7 +23,7 @@
   "homepage": "https://github.com/Roaders/YouTubeCommentator",
   "dependencies": {},
   "devDependencies": {
-    "gulp-uglify": "^2.0.1",
+    "gulp-uglify": "^2.1.1",
     "grunt": "^1.0.1",
     "grunt-contrib-uglify": "^2.0.0",
     "gulp": "^3.9.1",
