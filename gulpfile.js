@@ -21,8 +21,8 @@ gulp.task('clean', function () {
  * Compile TypeScript and include references to library and app .d.ts files.
  */
 gulp.task('compile-ts', ['clean'], function () {
-	var tsProject = ts.createProject('tsconfig.json', {outFile: "app.js"});
-    var tsResult = tsProject.src().pipe(ts(tsProject));
+	var tsProject = ts.createProject('tsconfig.json');
+    var tsResult = tsProject.src().pipe(tsProject());
 
     return tsResult.js.pipe(gulp.dest("./"));
 });

@@ -21,8 +21,13 @@
     "url": "https://github.com/Roaders/YouTubeCommentator/issues"
   },
   "homepage": "https://github.com/Roaders/YouTubeCommentator",
-  "dependencies": {},
+  "dependencies": {
+  },
   "devDependencies": {
+    "@types/angular": "^1.6.32",
+    "@types/angular-cookies": "^1.4.5",
+    "@types/angular-route": "^1.3.4",
+    "@types/gapi": "0.0.35",
     "gulp-uglify": "^2.0.1",
     "grunt": "^1.0.1",
     "grunt-contrib-uglify": "^2.0.0",

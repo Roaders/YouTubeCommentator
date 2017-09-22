@@ -3,7 +3,8 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "diagnostics": true
+    "diagnostics": true,
+    "outFile": "app.js"
   },
   "files": [
     "ts/app.ts"

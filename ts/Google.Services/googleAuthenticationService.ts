@@ -37,7 +37,7 @@ module Google.Services {
             private $http:ng.IHttpService,
             private $rootScope:ng.IScope,
             private $location: ng.ILocationService,
-            private $cookies : angular.cookies.ICookiesService,
+            private $cookies : ng.cookies.ICookiesService,
 			private authorizationScopes: string
         ) {
             if( this.$cookies.get( GoogleAuthenticationService.cookie_Key ) ) {
