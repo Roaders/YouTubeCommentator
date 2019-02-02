@@ -4,7 +4,7 @@
 
 /// <reference path="../node_modules/rx/ts/rx.all.d.ts"/>
 /// <reference path="../node_modules/rx-angular/ts/rx.angular.d.ts"/>
-/// <reference path="../typings/browser.d.ts"/>
+/// <reference path="../typings/index.d.ts"/>
 /// <reference path="Google.Services/youTubeService.ts"/>
 /// <reference path="Google.Services/googleAuthenticationService.ts"/>
 /// <reference path="Pricklythistle/services/commentsService.ts"/>

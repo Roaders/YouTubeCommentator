@@ -1,5 +1,5 @@
 {
-  "ambientDependencies": {
+  "globalDependencies": {
     "angular": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular.d.ts#17ef40452039d19e06dc2a3815ea898c505860fa",
     "angular-cookies": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular-cookies.d.ts#ccd32787a2aed5f876693b2c8d7100d1daba4782",
     "angular-route": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular-route.d.ts#cf172aab99c3139a718aa8e65398a22c53dd7ead",
