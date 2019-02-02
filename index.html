@@ -52,9 +52,6 @@
 	<!-- /build -->
 
 
-    <!-- Google Auth Client -->
-    <script src="https://apis.google.com/js/client.js?onload=initiateApp"></script>
-
 </head>
 <body >
 <div ng-view style="height: 100%">
@@ -66,4 +63,11 @@
 </div>
 
 </body>
+
+    <!-- Google Auth Client -->
+    <script async defer src="https://apis.google.com/js/api.js" 
+        onload="this.onload=function(){};initiateApp()" 
+        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+
 </html>

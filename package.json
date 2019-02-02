@@ -1,11 +1,12 @@
 {
     "name": "YouTubeCommentator",
-    "version": "1.5.1",
+    "version": "2.1.1",
     "description": "A webpage to easily manage comments and replies on a youTubeChannel",
     "main": "index.html",
     "scripts": {
         "prebuild": "npm run typings",
         "build": "gulp",
+        "gulp": "gulp",
         "postversion": "gulp",
         "typings": "typings install"
     },
@@ -24,8 +25,9 @@
         "url": "https://github.com/Roaders/YouTubeCommentator/issues"
     },
     "homepage": "https://github.com/Roaders/YouTubeCommentator",
-    "dependencies": {},
     "devDependencies": {
+        "@types/gapi": "0.0.36",
+        "@types/gapi.auth2": "0.0.48",
         "grunt": "^1.0.1",
         "grunt-contrib-uglify": "^1.0.1",
         "gulp": "^3.9.1",
@@ -40,5 +42,6 @@
         "typescript": "^1.7.5",
         "typing": "^0.1.9",
         "typings": "^2.1.1"
-    }
+    },
+    "dependencies": {}
 }

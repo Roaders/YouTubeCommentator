@@ -3,7 +3,8 @@
     "module": "commonjs",
     "target": "es5",
     "sourceMap": true,
-    "diagnostics": true
+    "diagnostics": true,
+    "skipLibCheck": true
   },
   "files": [
     "ts/app.ts"
