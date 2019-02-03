@@ -1,6 +1,6 @@
 {
     "name": "YouTubeCommentator",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "description": "A webpage to easily manage comments and replies on a youTubeChannel",
     "main": "index.html",
     "scripts": {
