@@ -30,7 +30,7 @@
         "@types/gapi.auth2": "0.0.48",
         "grunt": "^1.0.1",
         "grunt-contrib-uglify": "^1.0.1",
-        "gulp": "^3.9.1",
+        "gulp": "^4.0.2",
         "gulp-clean": "^0.3.2",
         "gulp-debug": "^2.1.2",
         "gulp-processhtml": "^1.1.0",
